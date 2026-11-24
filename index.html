@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medy Generator - Dataset Angka 0-9 (28×28) | JST</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        /* ---- HEADER ---- */
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px 30px;
+            border-bottom: 2px solid #0f3460;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, #e94560, #0f3460, #53d8fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo .badge {
+            background: #e94560;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .author {
+            color: #8892b0;
+            font-size: 0.85rem;
+        }
+
+        /* ---- TABS ---- */
+        .tabs {
+            display: flex;
+            background: #111122;
+            border-bottom: 1px solid #222;
+        }
+        .tab-btn {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            color: #8892b0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover { color: #fff; background: #1a1a2e; }
+        .tab-btn.active {
+            color: #53d8fb;
+            border-bottom-color: #e94560;
+            background: #1a1a2e;
+        }
+        .tab-content { display: none; padding: 24px; }
+        .tab-content.active { display: block; }
+
+        /* ---- CONTROLS ---- */
+        .controls {
+            background: #111122;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-end;
+        }
+        .control-group { display: flex; flex-direction: column; gap: 4px; }
+        .control-group label {
+            font-size: 0.78rem;
+            color: #8892b0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .control-group input, .control-group select {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            width: 100px;
+        }
+        .control-group input:focus, .control-group select:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+
+        /* ---- DIGIT CHECKBOXES ---- */
+        .digit-selector {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .digit-cb {
+            display: none;
+        }
+        .digit-label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #1a1a2e;
+            border: 1px solid #333;
+            color: #8892b0;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .digit-cb:checked + .digit-label {
+            background: #e94560;
+            color: #fff;
+            border-color: #e94560;
+        }
+
+        /* ---- BUTTONS ---- */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: #e94560; color: #fff; }
+        .btn-primary:hover { background: #ff6b81; transform: translateY(-1px); }
+        .btn-secondary { background: #0f3460; color: #fff; }
+        .btn-secondary:hover { background: #1a5276; }
+        .btn-accent { background: #2ecc71; color: #fff; }
+        .btn-accent:hover { background: #27ae60; }
+        .btn-purple { background: #8e44ad; color: #fff; }
+        .btn-purple:hover { background: #9b59b6; }
+
+        /* ---- GALLERY ---- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 6px;
+            max-width: 100%;
+        }
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #222;
+            transition: transform 0.15s;
+        }
+        .gallery-item:hover { transform: scale(1.3); z-index: 10; border-color: #e94560; }
+        .gallery-item canvas { width: 100%; height: 100%; image-rendering: pixelated; }
+        .gallery-item .digit-tag {
+            position: absolute;
+            top: 1px;
+            right: 2px;
+            font-size: 0.55rem;
+            color: #53d8fb;
+            font-weight: 700;
+        }
+
+        /* ---- PREVIEW DETAIL ---- */
+        .preview-area {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .preview-big {
+            text-align: center;
+        }
+        .preview-big canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            image-rendering: pixelated;
+        }
+        .preview-info {
+            background: #111122;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            min-width: 200px;
+        }
+        .variations-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 56px);
+            gap: 6px;
+        }
+        .variations-grid canvas {
+            width: 56px;
+            height: 56px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            image-rendering: pixelated;
+        }
+
+        /* ---- STATS ---- */
+        .stats-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: #111122;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 20px;
+            flex: 1;
+            min-width: 300px;
+        }
+        .stat-card h3 {
+            color: #53d8fb;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 180px; }
+        .bar-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .bar {
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease;
+        }
+        .bar-label { font-size: 0.75rem; color: #8892b0; }
+        .bar-value { font-size: 0.7rem; color: #fff; font-weight: 700; }
+
+        /* ---- PAGINATION ---- */
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .page-info {
+            color: #8892b0;
+            font-size: 0.85rem;
+        }
+
+        /* ---- FOOTER ---- */
+        .status-bar {
+            background: #111122;
+            border-top: 1px solid #222;
+            padding: 10px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        .status-text { color: #8892b0; font-size: 0.82rem; }
+        .progress-bar {
+            width: 250px;
+            height: 6px;
+            background: #1a1a2e;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #53d8fb);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .main-content { padding-bottom: 50px; }
+
+        /* ---- CHECKBOX STYLED ---- */
+        .styled-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .styled-checkbox input[type="checkbox"] {
+            accent-color: #e94560;
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ---- DOWNLOAD SECTION ---- */
+        .download-section {
+            background: #111122;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .download-section p {
+            color: #8892b0;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 14px 16px; }
+            .tab-btn { padding: 10px 14px; font-size: 0.8rem; }
+            .tab-content { padding: 16px; }
+            .controls { padding: 14px; }
+            .preview-area { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="logo">
+        <h1>🎨 Medy Generator</h1>
+        <span class="badge">JST</span>
+    </div>
+    <div class="author">
+        Muhammad Rizki Rahmady — 03041182429009 | Tugas 13 — Dataset Angka 0-9 (28×28)
+    </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('gallery')">📷 Galeri Preview</button>
+    <button class="tab-btn" onclick="switchTab('detail')">🔍 Preview Detail</button>
+    <button class="tab-btn" onclick="switchTab('stats')">📊 Statistik</button>
+</div>
+
+<div class="main-content">
+
+<!-- TAB 1: GALLERY -->
+<div id="tab-gallery" class="tab-content active">
+    <div class="controls">
+        <div class="control-group">
+            <label>Jumlah/Angka</label>
+            <input type="number" id="inp-jumlah" value="30" min="1" max="200">
+        </div>
+        <div class="control-group">
+            <label>Noise (0-1)</label>
+            <input type="number" id="inp-noise" value="0" min="0" max="1" step="0.05">
+        </div>
+        <div class="control-group">
+            <label>Seed</label>
+            <input type="number" id="inp-seed" value="42" min="0">
+        </div>
+        <div class="control-group">
+            <label style="display:flex;align-items:center;gap:6px;">
+                <input type="checkbox" id="inp-blur" style="accent-color:#e94560;width:14px;height:14px;">
+                Blur
+            </label>
+        </div>
+        <div class="control-group">
+            <label>Angka</label>
+            <div class="digit-selector">
+                <input class="digit-cb" type="checkbox" id="d0" checked><label class="digit-label" for="d0">0</label>
+                <input class="digit-cb" type="checkbox" id="d1" checked><label class="digit-label" for="d1">1</label>
+                <input class="digit-cb" type="checkbox" id="d2" checked><label class="digit-label" for="d2">2</label>
+                <input class="digit-cb" type="checkbox" id="d3" checked><label class="digit-label" for="d3">3</label>
+                <input class="digit-cb" type="checkbox" id="d4" checked><label class="digit-label" for="d4">4</label>
+                <input class="digit-cb" type="checkbox" id="d5" checked><label class="digit-label" for="d5">5</label>
+                <input class="digit-cb" type="checkbox" id="d6" checked><label class="digit-label" for="d6">6</label>
+                <input class="digit-cb" type="checkbox" id="d7" checked><label class="digit-label" for="d7">7</label>
+                <input class="digit-cb" type="checkbox" id="d8" checked><label class="digit-label" for="d8">8</label>
+                <input class="digit-cb" type="checkbox" id="d9" checked><label class="digit-label" for="d9">9</label>
+            </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+            <button class="btn btn-primary" onclick="generateAll()">🔄 Generate</button>
+            <button class="btn btn-accent" onclick="downloadZip()">💾 Download ZIP</button>
+        </div>
+    </div>
+
+    <div class="pagination">
+        <button class="btn btn-secondary" onclick="prevPage()">◀ Prev</button>
+        <span class="page-info" id="page-info">Halaman 1 / 1</span>
+        <button class="btn btn-secondary" onclick="nextPage()">Next ▶</button>
+        <span class="page-info" id="total-info" style="margin-left:auto;">Total: 0 gambar</span>
+    </div>
+
+    <div class="gallery-grid" id="gallery-grid"></div>
+
+    <div class="download-section" id="download-section" style="display:none;">
+        <p>💡 Gambar yang di-generate bisa di-download sebagai file ZIP berisi PNG 28×28 per angka.</p>
+        <button class="btn btn-accent" onclick="downloadZip()">💾 Download Semua (ZIP)</button>
+    </div>
+</div>
+
+<!-- TAB 2: DETAIL -->
+<div id="tab-detail" class="tab-content">
+    <div class="controls">
+        <div class="control-group">
+            <label>Angka</label>
+            <select id="inp-single-digit">
+                <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>Skala</label>
+            <input type="text" id="inp-skala" value="auto" style="width:70px;">
+        </div>
+        <div class="control-group">
+            <label>Rotasi (°)</label>
+            <input type="text" id="inp-rotasi" value="auto" style="width:70px;">
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+            <button class="btn btn-primary" onclick="generateSingle()">🔄 Generate 1</button>
+            <button class="btn btn-purple" onclick="generateVariations()">🎲 25 Variasi</button>
+        </div>
+    </div>
+
+    <div class="preview-area">
+        <div class="preview-big">
+            <canvas id="big-preview" width="168" height="168"></canvas>
+            <div class="preview-info" id="preview-info">
+                Digit&nbsp;&nbsp;&nbsp;&nbsp;: -<br>
+                Ukuran&nbsp;&nbsp;&nbsp;: 28 × 28<br>
+                Piksel 1 : -<br>
+                Piksel 0 : -<br>
+                Densitas : -
+            </div>
+        </div>
+        <div>
+            <h3 style="color:#53d8fb;margin-bottom:10px;font-size:0.9rem;">Variasi Random</h3>
+            <div class="variations-grid" id="variations-grid"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TAB 3: STATS -->
+<div id="tab-stats" class="tab-content">
+    <div class="stats-container">
+        <div class="stat-card">
+            <h3>📊 Distribusi Jumlah Citra per Angka</h3>
+            <div class="bar-chart" id="chart-distribution"></div>
+        </div>
+        <div class="stat-card">
+            <h3>📈 Densitas Piksel Rata-rata per Angka</h3>
+            <div class="bar-chart" id="chart-density"></div>
+        </div>
+    </div>
+    <div class="stat-card" style="margin-top:16px;">
+        <h3>📋 Ringkasan Dataset</h3>
+        <p id="stats-summary" style="color:#8892b0;line-height:1.8;">Klik 'Generate' untuk melihat statistik.</p>
+    </div>
+</div>
+
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+    <span class="status-text" id="status-text">Siap. Klik 'Generate' untuk membuat dataset.</span>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+</div>
+
+<script>
+// =====================================================================
+//  SEEDED RANDOM (Mulberry32)
+// =====================================================================
+function mulberry32(seed) {
+    return function() {
+        seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+        let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+}
+
+let rng = mulberry32(42);
+
+function rngInt(min, max) { return Math.floor(rng() * (max - min)) + min; }
+function rngFloat(min, max) { return rng() * (max - min) + min; }
+
+// =====================================================================
+//  DIGIT RENDERING (Canvas 28x28)
+// =====================================================================
+const FONTS = [
+    'bold {s}px sans-serif',
+    'bold {s}px serif',
+    '{s}px monospace',
+    'italic bold {s}px serif',
+    'bold {s}px system-ui',
+    '{s}px Georgia',
+    'bold {s}px Courier New',
+];
+
+function generateDigitImage(digit, options = {}) {
+    const c = document.createElement('canvas');
+    c.width = 28; c.height = 28;
+    const ctx = c.getContext('2d');
+
+    // Parameters
+    const fontIdx = options.fontIdx ?? rngInt(0, FONTS.length);
+    const fontSize = options.skala ? Math.round(options.skala * 28) : rngInt(16, 26);
+    const rotation = options.sudut ?? rngFloat(-15, 15);
+    const offsetX = options.offsetX ?? rngFloat(-2, 2);
+    const offsetY = options.offsetY ?? rngFloat(-2, 2);
+    const noiseLevel = options.noise ?? 0;
+    const blur = options.blur ?? false;
+
+    // Clear
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, 28, 28);
+
+    // Draw digit
+    ctx.save();
+    ctx.translate(14 + offsetX, 14 + offsetY);
+    ctx.rotate(rotation * Math.PI / 180);
+    ctx.fillStyle = '#fff';
+    ctx.font = FONTS[fontIdx % FONTS.length].replace('{s}', fontSize);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(String(digit), 0, 0);
+    ctx.restore();
+
+    // Blur
+    if (blur) {
+        ctx.filter = 'blur(0.8px)';
+        ctx.drawImage(c, 0, 0);
+        ctx.filter = 'none';
+    }
+
+    // Noise
+    if (noiseLevel > 0) {
+        const imgData = ctx.getImageData(0, 0, 28, 28);
+        const data = imgData.data;
+        for (let i = 0; i < data.length; i += 4) {
+            const r = rng();
+            if (r < noiseLevel / 2) {
+                data[i] = data[i+1] = data[i+2] = 0;
+            } else if (r > 1 - noiseLevel / 2) {
+                data[i] = data[i+1] = data[i+2] = 255;
+            }
+        }
+        ctx.putImageData(imgData, 0, 0);
+    }
+
+    // Binarize
+    const imgData = ctx.getImageData(0, 0, 28, 28);
+    const data = imgData.data;
+    let activePixels = 0;
+    for (let i = 0; i < data.length; i += 4) {
+        const v = data[i] > 90 ? 255 : 0;
+        data[i] = data[i+1] = data[i+2] = v;
+        if (v > 0) activePixels++;
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    return { canvas: c, activePixels };
+}
+
+// =====================================================================
+//  STATE
+// =====================================================================
+let generatedImages = [];   // [{digit, canvas, activePixels}, ...]
+let currentPage = 0;
+const perPage = 100;
+
+// =====================================================================
+//  TAB SWITCHING
+// =====================================================================
+function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+        b.classList.toggle('active', ['gallery','detail','stats'][i] === name);
+    });
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+}
+
+// =====================================================================
+//  GENERATE ALL
+// =====================================================================
+function generateAll() {
+    const jumlah = Math.max(1, parseInt(document.getElementById('inp-jumlah').value) || 30);
+    const noise = parseFloat(document.getElementById('inp-noise').value) || 0;
+    const seed = parseInt(document.getElementById('inp-seed').value) || 42;
+    const blur = document.getElementById('inp-blur').checked;
+
+    const digits = [];
+    for (let d = 0; d < 10; d++) {
+        if (document.getElementById('d' + d).checked) digits.push(d);
+    }
+    if (digits.length === 0) { alert('Pilih minimal satu angka!'); return; }
+
+    rng = mulberry32(seed);
+    generatedImages = [];
+    const total = digits.length * jumlah;
+
+    setStatus(`Generating ${total} gambar...`);
+    setProgress(0);
+
+    // Use setTimeout for non-blocking generation
+    let count = 0;
+    const batchSize = 20;
+
+    function processBatch() {
+        const end = Math.min(count + batchSize, total);
+        while (count < end) {
+            const dIdx = Math.floor(count / jumlah);
+            const digit = digits[dIdx];
+            const { canvas, activePixels } = generateDigitImage(digit, { noise, blur });
+            generatedImages.push({ digit, canvas, activePixels });
+            count++;
+        }
+        setProgress(count / total * 100);
+        setStatus(`Generating... ${count}/${total} (${Math.round(count/total*100)}%)`);
+
+        if (count < total) {
+            setTimeout(processBatch, 0);
+        } else {
+            currentPage = 0;
+            updateGallery();
+            updateStats();
+            setStatus(`Selesai! ${total} gambar berhasil di-generate.`);
+            setProgress(100);
+            document.getElementById('download-section').style.display = 'block';
+        }
+    }
+    processBatch();
+}
+
+// =====================================================================
+//  GALLERY
+// =====================================================================
+function updateGallery() {
+    const grid = document.getElementById('gallery-grid');
+    grid.innerHTML = '';
+
+    const start = currentPage * perPage;
+    const end = Math.min(start + perPage, generatedImages.length);
+    const totalPages = Math.max(1, Math.ceil(generatedImages.length / perPage));
+
+    document.getElementById('page-info').textContent = `Halaman ${currentPage + 1} / ${totalPages}`;
+    document.getElementById('total-info').textContent = `Total: ${generatedImages.length} gambar`;
+
+    for (let i = start; i < end; i++) {
+        const item = generatedImages[i];
+        const div = document.createElement('div');
+        div.className = 'gallery-item';
+
+        const c = document.createElement('canvas');
+        c.width = 28; c.height = 28;
+        c.getContext('2d').drawImage(item.canvas, 0, 0);
+        div.appendChild(c);
+
+        const tag = document.createElement('span');
+        tag.className = 'digit-tag';
+        tag.textContent = item.digit;
+        div.appendChild(tag);
+
+        grid.appendChild(div);
+    }
+}
+
+function prevPage() {
+    if (currentPage > 0) { currentPage--; updateGallery(); }
+}
+function nextPage() {
+    const totalPages = Math.max(1, Math.ceil(generatedImages.length / perPage));
+    if (currentPage < totalPages - 1) { currentPage++; updateGallery(); }
+}
+
+// =====================================================================
+//  SINGLE PREVIEW & VARIATIONS
+// =====================================================================
+function generateSingle() {
+    const digit = parseInt(document.getElementById('inp-single-digit').value);
+    const noise = parseFloat(document.getElementById('inp-noise').value) || 0;
+    const blur = document.getElementById('inp-blur').checked;
+    const skalaStr = document.getElementById('inp-skala').value.trim();
+    const rotasiStr = document.getElementById('inp-rotasi').value.trim();
+
+    const opts = { noise, blur };
+    if (skalaStr !== 'auto') opts.skala = parseFloat(skalaStr);
+    if (rotasiStr !== 'auto') opts.sudut = parseFloat(rotasiStr);
+
+    const { canvas, activePixels } = generateDigitImage(digit, opts);
+
+    // Big preview
+    const bigC = document.getElementById('big-preview');
+    const bigCtx = bigC.getContext('2d');
+    bigCtx.imageSmoothingEnabled = false;
+    bigCtx.clearRect(0, 0, 168, 168);
+    bigCtx.drawImage(canvas, 0, 0, 168, 168);
+
+    // Info
+    document.getElementById('preview-info').innerHTML =
+        `Digit&nbsp;&nbsp;&nbsp;&nbsp;: <strong style="color:#e94560">${digit}</strong><br>` +
+        `Ukuran&nbsp;&nbsp;&nbsp;: 28 × 28<br>` +
+        `Piksel 1 : ${activePixels}<br>` +
+        `Piksel 0 : ${784 - activePixels}<br>` +
+        `Densitas : ${(activePixels/784*100).toFixed(1)}%`;
+}
+
+function generateVariations() {
+    generateSingle();
+    const digit = parseInt(document.getElementById('inp-single-digit').value);
+    const noise = parseFloat(document.getElementById('inp-noise').value) || 0;
+    const blur = document.getElementById('inp-blur').checked;
+
+    const grid = document.getElementById('variations-grid');
+    grid.innerHTML = '';
+
+    for (let i = 0; i < 25; i++) {
+        const { canvas } = generateDigitImage(digit, { noise, blur });
+        const c = document.createElement('canvas');
+        c.width = 28; c.height = 28;
+        c.getContext('2d').drawImage(canvas, 0, 0);
+        grid.appendChild(c);
+    }
+}
+
+// =====================================================================
+//  STATISTICS
+// =====================================================================
+function updateStats() {
+    if (generatedImages.length === 0) return;
+
+    const counts = new Array(10).fill(0);
+    const densitySums = new Array(10).fill(0);
+    let totalDensity = 0;
+    let minD = 100, maxD = 0;
+
+    generatedImages.forEach(item => {
+        counts[item.digit]++;
+        const d = item.activePixels / 784 * 100;
+        densitySums[item.digit] += d;
+        totalDensity += d;
+        if (d < minD) minD = d;
+        if (d > maxD) maxD = d;
+    });
+
+    const colors = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#1abc9c',
+                     '#3498db','#9b59b6','#e91e63','#607d8b','#795548'];
+
+    // Distribution chart
+    const maxCount = Math.max(...counts, 1);
+    const distDiv = document.getElementById('chart-distribution');
+    distDiv.innerHTML = '';
+    for (let d = 0; d < 10; d++) {
+        const col = document.createElement('div');
+        col.className = 'bar-col';
+        const val = document.createElement('span');
+        val.className = 'bar-value';
+        val.textContent = counts[d];
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.background = colors[d];
+        bar.style.height = (counts[d] / maxCount * 100) + '%';
+        const lbl = document.createElement('span');
+        lbl.className = 'bar-label';
+        lbl.textContent = d;
+        col.appendChild(val);
+        col.appendChild(bar);
+        col.appendChild(lbl);
+        distDiv.appendChild(col);
+    }
+
+    // Density chart
+    const avgDensities = densitySums.map((s, i) => counts[i] > 0 ? s / counts[i] : 0);
+    const maxDensity = Math.max(...avgDensities, 1);
+    const densDiv = document.getElementById('chart-density');
+    densDiv.innerHTML = '';
+    for (let d = 0; d < 10; d++) {
+        const col = document.createElement('div');
+        col.className = 'bar-col';
+        const val = document.createElement('span');
+        val.className = 'bar-value';
+        val.textContent = avgDensities[d].toFixed(1) + '%';
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.background = colors[d];
+        bar.style.height = (avgDensities[d] / maxDensity * 100) + '%';
+        const lbl = document.createElement('span');
+        lbl.className = 'bar-label';
+        lbl.textContent = d;
+        col.appendChild(val);
+        col.appendChild(bar);
+        col.appendChild(lbl);
+        densDiv.appendChild(col);
+    }
+
+    const avgAll = totalDensity / generatedImages.length;
+    document.getElementById('stats-summary').innerHTML =
+        `Total Citra: <strong>${generatedImages.length}</strong> &nbsp;|&nbsp; ` +
+        `Densitas Rata-rata: <strong>${avgAll.toFixed(1)}%</strong> &nbsp;|&nbsp; ` +
+        `Min: <strong>${minD.toFixed(1)}%</strong> &nbsp;|&nbsp; ` +
+        `Max: <strong>${maxD.toFixed(1)}%</strong>`;
+}
+
+// =====================================================================
+//  DOWNLOAD AS ZIP (using JSZip from CDN)
+// =====================================================================
+async function downloadZip() {
+    if (generatedImages.length === 0) {
+        alert("Belum ada gambar! Klik 'Generate' dulu.");
+        return;
+    }
+
+    setStatus('Menyiapkan ZIP...');
+
+    // Dynamically load JSZip
+    if (typeof JSZip === 'undefined') {
+        await new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+            s.onload = resolve;
+            s.onerror = () => reject(new Error('Gagal memuat JSZip'));
+            document.head.appendChild(s);
+        });
+    }
+
+    const zip = new JSZip();
+    const counters = new Array(10).fill(0);
+
+    for (let i = 0; i < generatedImages.length; i++) {
+        const item = generatedImages[i];
+        const folder = zip.folder(String(item.digit));
+        const num = counters[item.digit]++;
+        const blob = await new Promise(resolve => item.canvas.toBlob(resolve, 'image/png'));
+        folder.file(`${item.digit}_${String(num).padStart(4, '0')}.png`, blob);
+        if (i % 50 === 0) setProgress(i / generatedImages.length * 100);
+    }
+
+    setStatus('Membuat file ZIP...');
+    const content = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(content);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dataset_angka_28x28.zip';
+    a.click();
+    URL.revokeObjectURL(url);
+
+    setStatus(`ZIP berhasil di-download! (${generatedImages.length} gambar)`);
+    setProgress(100);
+}
+
+// =====================================================================
+//  HELPERS
+// =====================================================================
+function setStatus(text) {
+    document.getElementById('status-text').textContent = text;
+}
+function setProgress(pct) {
+    document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+// Initial preview
+window.addEventListener('load', () => {
+    rng = mulberry32(42);
+    generateAll();
+});
+</script>
+
+</body>
+</html>
