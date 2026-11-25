@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medy Generator - Dataset Angka 0-9 (28×28) | JST</title>
+    <title>Medy Generator & BPNN Studio - Angka 0-9 (28×28) | JST</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -17,33 +22,38 @@
         /* ---- HEADER ---- */
         header {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            padding: 20px 30px;
-            border-bottom: 2px solid #0f3460;
+            padding: 18px 28px;
+            border-bottom: 2px solid #8b1e24;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 12px;
         }
+
         .logo {
             display: flex;
             align-items: center;
             gap: 12px;
         }
+
         .logo h1 {
-            font-size: 1.5rem;
-            background: linear-gradient(90deg, #e94560, #0f3460, #53d8fb);
+            font-size: 1.45rem;
+            background: linear-gradient(90deg, #ff4d6d, #e94560, #53d8fb);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
         .logo .badge {
-            background: #e94560;
+            background: #8b1e24;
             color: #fff;
             padding: 3px 10px;
             border-radius: 12px;
             font-size: 0.7rem;
             font-weight: 700;
+            letter-spacing: 0.5px;
         }
+
         .author {
             color: #8892b0;
             font-size: 0.85rem;
@@ -54,57 +64,82 @@
             display: flex;
             background: #111122;
             border-bottom: 1px solid #222;
+            overflow-x: auto;
         }
+
         .tab-btn {
-            padding: 12px 24px;
+            padding: 12px 22px;
             background: none;
             border: none;
             color: #8892b0;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 600;
             cursor: pointer;
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
+            white-space: nowrap;
         }
-        .tab-btn:hover { color: #fff; background: #1a1a2e; }
+
+        .tab-btn:hover {
+            color: #fff;
+            background: #1a1a2e;
+        }
+
         .tab-btn.active {
             color: #53d8fb;
             border-bottom-color: #e94560;
             background: #1a1a2e;
         }
-        .tab-content { display: none; padding: 24px; }
-        .tab-content.active { display: block; }
+
+        .tab-content {
+            display: none;
+            padding: 22px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
 
         /* ---- CONTROLS ---- */
         .controls {
             background: #111122;
             border: 1px solid #222;
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 18px;
+            margin-bottom: 18px;
             display: flex;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 14px;
             align-items: flex-end;
         }
-        .control-group { display: flex; flex-direction: column; gap: 4px; }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
         .control-group label {
-            font-size: 0.78rem;
+            font-size: 0.74rem;
             color: #8892b0;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .control-group input, .control-group select {
+
+        .control-group input,
+        .control-group select {
             background: #1a1a2e;
             border: 1px solid #333;
             color: #fff;
-            padding: 8px 12px;
+            padding: 8px 10px;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             width: 100px;
         }
-        .control-group input:focus, .control-group select:focus {
+
+        .control-group input:focus,
+        .control-group select:focus {
             outline: none;
             border-color: #e94560;
         }
@@ -114,10 +149,13 @@
             display: flex;
             gap: 4px;
             align-items: center;
+            flex-wrap: wrap;
         }
+
         .digit-cb {
             display: none;
         }
+
         .digit-label {
             display: inline-flex;
             align-items: center;
@@ -133,7 +171,8 @@
             cursor: pointer;
             transition: all 0.15s;
         }
-        .digit-cb:checked + .digit-label {
+
+        .digit-cb:checked+.digit-label {
             background: #e94560;
             color: #fff;
             border-color: #e94560;
@@ -141,10 +180,10 @@
 
         /* ---- BUTTONS ---- */
         .btn {
-            padding: 10px 20px;
+            padding: 9px 16px;
             border: none;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.86rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
@@ -152,22 +191,68 @@
             align-items: center;
             gap: 6px;
         }
-        .btn-primary { background: #e94560; color: #fff; }
-        .btn-primary:hover { background: #ff6b81; transform: translateY(-1px); }
-        .btn-secondary { background: #0f3460; color: #fff; }
-        .btn-secondary:hover { background: #1a5276; }
-        .btn-accent { background: #2ecc71; color: #fff; }
-        .btn-accent:hover { background: #27ae60; }
-        .btn-purple { background: #8e44ad; color: #fff; }
-        .btn-purple:hover { background: #9b59b6; }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-primary {
+            background: #e94560;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #ff6b81;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #0f3460;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: #1a5276;
+        }
+
+        .btn-accent {
+            background: #2ecc71;
+            color: #0a0a0f;
+        }
+
+        .btn-accent:hover {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .btn-purple {
+            background: #8e44ad;
+            color: #fff;
+        }
+
+        .btn-purple:hover {
+            background: #9b59b6;
+        }
+
+        .btn-dark {
+            background: #242438;
+            color: #ddd;
+            border: 1px solid #383854;
+        }
+
+        .btn-dark:hover {
+            background: #32324d;
+        }
 
         /* ---- GALLERY ---- */
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
             gap: 6px;
-            max-width: 100%;
         }
+
         .gallery-item {
             position: relative;
             aspect-ratio: 1;
@@ -175,16 +260,30 @@
             overflow: hidden;
             border: 1px solid #222;
             transition: transform 0.15s;
+            background: #000;
         }
-        .gallery-item:hover { transform: scale(1.3); z-index: 10; border-color: #e94560; }
-        .gallery-item canvas { width: 100%; height: 100%; image-rendering: pixelated; }
+
+        .gallery-item:hover {
+            transform: scale(1.35);
+            z-index: 10;
+            border-color: #e94560;
+        }
+
+        .gallery-item canvas {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+            display: block;
+        }
+
         .gallery-item .digit-tag {
             position: absolute;
             top: 1px;
             right: 2px;
-            font-size: 0.55rem;
+            font-size: 0.58rem;
             color: #53d8fb;
             font-weight: 700;
+            text-shadow: 0 0 3px #000;
         }
 
         /* ---- PREVIEW DETAIL ---- */
@@ -193,85 +292,224 @@
             gap: 24px;
             flex-wrap: wrap;
         }
+
         .preview-big {
             text-align: center;
         }
+
         .preview-big canvas {
             border: 2px solid #333;
             border-radius: 8px;
             image-rendering: pixelated;
+            background: #000;
         }
+
         .preview-info {
             background: #111122;
             border: 1px solid #222;
             border-radius: 8px;
-            padding: 16px;
+            padding: 14px;
+            margin-top: 10px;
             font-family: 'Consolas', monospace;
-            font-size: 0.85rem;
-            line-height: 1.8;
-            min-width: 200px;
+            font-size: 0.84rem;
+            line-height: 1.75;
+            min-width: 210px;
+            text-align: left;
         }
+
         .variations-grid {
             display: grid;
             grid-template-columns: repeat(5, 56px);
             gap: 6px;
         }
+
         .variations-grid canvas {
             width: 56px;
             height: 56px;
             border: 1px solid #333;
             border-radius: 4px;
             image-rendering: pixelated;
+            background: #000;
         }
 
         /* ---- STATS ---- */
         .stats-container {
             display: flex;
-            gap: 20px;
+            gap: 18px;
             flex-wrap: wrap;
         }
+
         .stat-card {
             background: #111122;
             border: 1px solid #222;
             border-radius: 12px;
-            padding: 20px;
+            padding: 18px;
             flex: 1;
             min-width: 300px;
         }
+
         .stat-card h3 {
             color: #53d8fb;
             margin-bottom: 12px;
             font-size: 0.95rem;
         }
-        .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 180px; }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 180px;
+        }
+
         .bar-col {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
+            height: 100%;
+            justify-content: flex-end;
         }
+
         .bar {
             width: 100%;
             border-radius: 4px 4px 0 0;
-            transition: height 0.5s ease;
+            transition: height 0.4s ease;
+            min-height: 2px;
         }
-        .bar-label { font-size: 0.75rem; color: #8892b0; }
-        .bar-value { font-size: 0.7rem; color: #fff; font-weight: 700; }
 
-        /* ---- PAGINATION ---- */
+        .bar-label {
+            font-size: 0.75rem;
+            color: #8892b0;
+        }
+
+        .bar-value {
+            font-size: 0.68rem;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        /* ---- BPNN STUDIO ---- */
+        .bpnn-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 18px;
+        }
+
+        .panel-card {
+            background: #111122;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .panel-title {
+            color: #ff6b81;
+            font-size: 0.92rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #draw-canvas {
+            width: 280px;
+            height: 280px;
+            background: #000;
+            border: 2px solid #444;
+            border-radius: 8px;
+            cursor: crosshair;
+            image-rendering: pixelated;
+            touch-action: none;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .pred-result {
+            text-align: center;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 12px 0 8px;
+        }
+
+        .prob-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 5px;
+            height: 95px;
+            padding-top: 8px;
+        }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 220px;
+            background: #0c0c16;
+            border: 1px solid #26263a;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .eval-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .cm-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.72rem;
+            text-align: center;
+            font-family: 'Consolas', monospace;
+        }
+
+        .cm-table th,
+        .cm-table td {
+            border: 1px solid #26263a;
+            padding: 4px 2px;
+        }
+
+        .cm-table th {
+            background: #1a1a2e;
+            color: #53d8fb;
+        }
+
+        .log-box {
+            background: #08080e;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.78rem;
+            color: #a3e635;
+            height: 210px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        /* ---- PAGINATION & FOOTER ---- */
         .pagination {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
         }
+
         .page-info {
             color: #8892b0;
             font-size: 0.85rem;
         }
 
-        /* ---- FOOTER ---- */
         .status-bar {
             background: #111122;
             border-top: 1px solid #222;
@@ -284,607 +522,1283 @@
             left: 0;
             right: 0;
             z-index: 100;
+            gap: 12px;
         }
-        .status-text { color: #8892b0; font-size: 0.82rem; }
+
+        .status-text {
+            color: #a0aec0;
+            font-size: 0.82rem;
+        }
+
         .progress-bar {
-            width: 250px;
+            width: 240px;
             height: 6px;
             background: #1a1a2e;
             border-radius: 3px;
             overflow: hidden;
+            flex-shrink: 0;
         }
+
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #e94560, #53d8fb);
             border-radius: 3px;
             width: 0%;
-            transition: width 0.3s;
+            transition: width 0.25s;
         }
 
-        .main-content { padding-bottom: 50px; }
-
-        /* ---- CHECKBOX STYLED ---- */
-        .styled-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-        .styled-checkbox input[type="checkbox"] {
-            accent-color: #e94560;
-            width: 16px;
-            height: 16px;
+        .main-content {
+            padding-bottom: 58px;
         }
 
-        /* ---- DOWNLOAD SECTION ---- */
         .download-section {
             background: #111122;
             border: 1px solid #222;
             border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
+            padding: 18px;
+            margin-top: 18px;
             text-align: center;
         }
+
         .download-section p {
             color: #8892b0;
             margin-bottom: 12px;
             font-size: 0.85rem;
         }
 
+        @media (max-width: 960px) {
+            .bpnn-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-row,
+            .eval-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
-            header { padding: 14px 16px; }
-            .tab-btn { padding: 10px 14px; font-size: 0.8rem; }
-            .tab-content { padding: 16px; }
-            .controls { padding: 14px; }
-            .preview-area { flex-direction: column; }
+            header {
+                padding: 14px 16px;
+            }
+
+            .tab-btn {
+                padding: 10px 14px;
+                font-size: 0.8rem;
+            }
+
+            .tab-content {
+                padding: 14px;
+            }
+
+            .controls {
+                padding: 14px;
+            }
+
+            .preview-area {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<!-- HEADER -->
-<header>
-    <div class="logo">
-        <h1>🎨 Medy Generator</h1>
-        <span class="badge">JST</span>
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <h1>🎨 Medy Generator & BPNN</h1>
+            <span class="badge">JST 784-16-16-10</span>
+        </div>
+        <div class="author">
+            Muhammad Rizki Rahmady — 03041182429009 | Tugas 13 — Pengenalan Pola Angka 0-9 (28×28)
+        </div>
+    </header>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('gallery')">📷 Galeri Dataset</button>
+        <button class="tab-btn" onclick="switchTab('detail')">🔍 Preview Detail</button>
+        <button class="tab-btn" onclick="switchTab('stats')">📊 Statistik</button>
+        <button class="tab-btn" onclick="switchTab('bpnn')">🧠 BPNN Studio (Latih & Prediksi)</button>
     </div>
-    <div class="author">
-        Muhammad Rizki Rahmady — 03041182429009 | Tugas 13 — Dataset Angka 0-9 (28×28)
-    </div>
-</header>
 
-<!-- TABS -->
-<div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('gallery')">📷 Galeri Preview</button>
-    <button class="tab-btn" onclick="switchTab('detail')">🔍 Preview Detail</button>
-    <button class="tab-btn" onclick="switchTab('stats')">📊 Statistik</button>
-</div>
+    <div class="main-content">
 
-<div class="main-content">
+        <!-- TAB 1: GALLERY -->
+        <div id="tab-gallery" class="tab-content active">
+            <div class="controls">
+                <div class="control-group">
+                    <label>Pola/Angka (≥50)</label>
+                    <input type="number" id="inp-jumlah" value="100" min="50" max="500">
+                </div>
+                <div class="control-group">
+                    <label>Noise (0-1)</label>
+                    <input type="number" id="inp-noise" value="0" min="0" max="1" step="0.05">
+                </div>
+                <div class="control-group">
+                    <label>Seed</label>
+                    <input type="number" id="inp-seed" value="42" min="0">
+                </div>
+                <div class="control-group" style="justify-content:center; padding-bottom:6px;">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                        <input type="checkbox" id="inp-blur" style="accent-color:#e94560;width:15px;height:15px;">
+                        Blur
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label>Angka</label>
+                    <div class="digit-selector">
+                        <input class="digit-cb" type="checkbox" id="d0" checked><label class="digit-label"
+                            for="d0">0</label>
+                        <input class="digit-cb" type="checkbox" id="d1" checked><label class="digit-label"
+                            for="d1">1</label>
+                        <input class="digit-cb" type="checkbox" id="d2" checked><label class="digit-label"
+                            for="d2">2</label>
+                        <input class="digit-cb" type="checkbox" id="d3" checked><label class="digit-label"
+                            for="d3">3</label>
+                        <input class="digit-cb" type="checkbox" id="d4" checked><label class="digit-label"
+                            for="d4">4</label>
+                        <input class="digit-cb" type="checkbox" id="d5" checked><label class="digit-label"
+                            for="d5">5</label>
+                        <input class="digit-cb" type="checkbox" id="d6" checked><label class="digit-label"
+                            for="d6">6</label>
+                        <input class="digit-cb" type="checkbox" id="d7" checked><label class="digit-label"
+                            for="d7">7</label>
+                        <input class="digit-cb" type="checkbox" id="d8" checked><label class="digit-label"
+                            for="d8">8</label>
+                        <input class="digit-cb" type="checkbox" id="d9" checked><label class="digit-label"
+                            for="d9">9</label>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="generateAll()">🔄 Generate</button>
+                    <button class="btn btn-dark" onclick="presetGenerate(100)">1.000 Pola</button>
+                    <button class="btn btn-dark" onclick="presetGenerate(400)">4.000 Pola</button>
+                    <button class="btn btn-accent" onclick="downloadZip()">💾 ZIP</button>
+                    <button class="btn btn-purple" onclick="downloadCsv()">📄 CSV</button>
+                </div>
+            </div>
 
-<!-- TAB 1: GALLERY -->
-<div id="tab-gallery" class="tab-content active">
-    <div class="controls">
-        <div class="control-group">
-            <label>Jumlah/Angka</label>
-            <input type="number" id="inp-jumlah" value="30" min="1" max="200">
-        </div>
-        <div class="control-group">
-            <label>Noise (0-1)</label>
-            <input type="number" id="inp-noise" value="0" min="0" max="1" step="0.05">
-        </div>
-        <div class="control-group">
-            <label>Seed</label>
-            <input type="number" id="inp-seed" value="42" min="0">
-        </div>
-        <div class="control-group">
-            <label style="display:flex;align-items:center;gap:6px;">
-                <input type="checkbox" id="inp-blur" style="accent-color:#e94560;width:14px;height:14px;">
-                Blur
-            </label>
-        </div>
-        <div class="control-group">
-            <label>Angka</label>
-            <div class="digit-selector">
-                <input class="digit-cb" type="checkbox" id="d0" checked><label class="digit-label" for="d0">0</label>
-                <input class="digit-cb" type="checkbox" id="d1" checked><label class="digit-label" for="d1">1</label>
-                <input class="digit-cb" type="checkbox" id="d2" checked><label class="digit-label" for="d2">2</label>
-                <input class="digit-cb" type="checkbox" id="d3" checked><label class="digit-label" for="d3">3</label>
-                <input class="digit-cb" type="checkbox" id="d4" checked><label class="digit-label" for="d4">4</label>
-                <input class="digit-cb" type="checkbox" id="d5" checked><label class="digit-label" for="d5">5</label>
-                <input class="digit-cb" type="checkbox" id="d6" checked><label class="digit-label" for="d6">6</label>
-                <input class="digit-cb" type="checkbox" id="d7" checked><label class="digit-label" for="d7">7</label>
-                <input class="digit-cb" type="checkbox" id="d8" checked><label class="digit-label" for="d8">8</label>
-                <input class="digit-cb" type="checkbox" id="d9" checked><label class="digit-label" for="d9">9</label>
+            <div class="pagination">
+                <button class="btn btn-secondary" onclick="prevPage()">◀ Prev</button>
+                <span class="page-info" id="page-info">Halaman 1 / 1</span>
+                <button class="btn btn-secondary" onclick="nextPage()">Next ▶</button>
+                <select id="filter-gallery" onchange="currentPage=0; updateGallery();"
+                    style="background:#1a1a2e;border:1px solid #333;color:#fff;padding:7px 10px;border-radius:8px;font-size:0.84rem;">
+                    <option value="all">Filter: Semua Angka</option>
+                    <option value="0">Angka 0</option>
+                    <option value="1">Angka 1</option>
+                    <option value="2">Angka 2</option>
+                    <option value="3">Angka 3</option>
+                    <option value="4">Angka 4</option>
+                    <option value="5">Angka 5</option>
+                    <option value="6">Angka 6</option>
+                    <option value="7">Angka 7</option>
+                    <option value="8">Angka 8</option>
+                    <option value="9">Angka 9</option>
+                </select>
+                <span class="page-info" id="total-info" style="margin-left:auto;">Total: 0 gambar</span>
+            </div>
+
+            <div class="gallery-grid" id="gallery-grid"></div>
+
+            <div class="download-section" id="download-section" style="display:none;">
+                <p>💡 Dataset siap diunduh sebagai <strong>ZIP (PNG 28×28 per folder angka)</strong> atau <strong>CSV
+                        (784 fitur biner)</strong>, atau langsung latih di tab <strong>BPNN Studio</strong>.</p>
+                <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+                    <button class="btn btn-accent" onclick="downloadZip()">💾 Download ZIP (PNG)</button>
+                    <button class="btn btn-purple" onclick="downloadCsv()">📄 Download CSV (JST)</button>
+                    <button class="btn btn-primary" onclick="switchTab('bpnn')">🧠 Latih di BPNN Studio →</button>
+                </div>
             </div>
         </div>
-        <div style="display:flex;gap:8px;align-items:flex-end;">
-            <button class="btn btn-primary" onclick="generateAll()">🔄 Generate</button>
-            <button class="btn btn-accent" onclick="downloadZip()">💾 Download ZIP</button>
-        </div>
-    </div>
 
-    <div class="pagination">
-        <button class="btn btn-secondary" onclick="prevPage()">◀ Prev</button>
-        <span class="page-info" id="page-info">Halaman 1 / 1</span>
-        <button class="btn btn-secondary" onclick="nextPage()">Next ▶</button>
-        <span class="page-info" id="total-info" style="margin-left:auto;">Total: 0 gambar</span>
-    </div>
+        <!-- TAB 2: DETAIL -->
+        <div id="tab-detail" class="tab-content">
+            <div class="controls">
+                <div class="control-group">
+                    <label>Angka</label>
+                    <select id="inp-single-digit">
+                        <option>0</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Skala</label>
+                    <input type="text" id="inp-skala" value="auto" style="width:75px;">
+                </div>
+                <div class="control-group">
+                    <label>Rotasi (°)</label>
+                    <input type="text" id="inp-rotasi" value="auto" style="width:75px;">
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-end;">
+                    <button class="btn btn-primary" onclick="generateSingle()">🔄 Generate 1</button>
+                    <button class="btn btn-purple" onclick="generateVariations()">🎲 25 Variasi</button>
+                </div>
+            </div>
 
-    <div class="gallery-grid" id="gallery-grid"></div>
-
-    <div class="download-section" id="download-section" style="display:none;">
-        <p>💡 Gambar yang di-generate bisa di-download sebagai file ZIP berisi PNG 28×28 per angka.</p>
-        <button class="btn btn-accent" onclick="downloadZip()">💾 Download Semua (ZIP)</button>
-    </div>
-</div>
-
-<!-- TAB 2: DETAIL -->
-<div id="tab-detail" class="tab-content">
-    <div class="controls">
-        <div class="control-group">
-            <label>Angka</label>
-            <select id="inp-single-digit">
-                <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
-                <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <label>Skala</label>
-            <input type="text" id="inp-skala" value="auto" style="width:70px;">
-        </div>
-        <div class="control-group">
-            <label>Rotasi (°)</label>
-            <input type="text" id="inp-rotasi" value="auto" style="width:70px;">
-        </div>
-        <div style="display:flex;gap:8px;align-items:flex-end;">
-            <button class="btn btn-primary" onclick="generateSingle()">🔄 Generate 1</button>
-            <button class="btn btn-purple" onclick="generateVariations()">🎲 25 Variasi</button>
-        </div>
-    </div>
-
-    <div class="preview-area">
-        <div class="preview-big">
-            <canvas id="big-preview" width="168" height="168"></canvas>
-            <div class="preview-info" id="preview-info">
-                Digit&nbsp;&nbsp;&nbsp;&nbsp;: -<br>
-                Ukuran&nbsp;&nbsp;&nbsp;: 28 × 28<br>
-                Piksel 1 : -<br>
-                Piksel 0 : -<br>
-                Densitas : -
+            <div class="preview-area">
+                <div class="preview-big">
+                    <canvas id="big-preview" width="168" height="168"></canvas>
+                    <div class="preview-info" id="preview-info">
+                        Digit&nbsp;&nbsp;&nbsp;&nbsp;: -<br>
+                        Ukuran&nbsp;&nbsp;&nbsp;: 28 × 28<br>
+                        Piksel 1 : -<br>
+                        Piksel 0 : -<br>
+                        Densitas : -
+                    </div>
+                </div>
+                <div>
+                    <h3 style="color:#53d8fb;margin-bottom:10px;font-size:0.9rem;">25 Variasi Random</h3>
+                    <div class="variations-grid" id="variations-grid"></div>
+                </div>
             </div>
         </div>
-        <div>
-            <h3 style="color:#53d8fb;margin-bottom:10px;font-size:0.9rem;">Variasi Random</h3>
-            <div class="variations-grid" id="variations-grid"></div>
+
+        <!-- TAB 3: STATS -->
+        <div id="tab-stats" class="tab-content">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>📊 Distribusi Jumlah Citra per Angka</h3>
+                    <div class="bar-chart" id="chart-distribution"></div>
+                </div>
+                <div class="stat-card">
+                    <h3>📈 Densitas Piksel Rata-rata per Angka</h3>
+                    <div class="bar-chart" id="chart-density"></div>
+                </div>
+            </div>
+            <div class="stat-card" style="margin-top:16px;">
+                <h3>📋 Ringkasan Dataset</h3>
+                <p id="stats-summary" style="color:#8892b0;line-height:1.8;">Klik 'Generate' untuk melihat statistik.
+                </p>
+            </div>
+        </div>
+
+        <!-- TAB 4: BPNN STUDIO -->
+        <div id="tab-bpnn" class="tab-content">
+            <div class="controls">
+                <div class="control-group">
+                    <label>Alpha (α)</label>
+                    <input type="number" id="bpnn-alpha" value="0.8" step="0.05" min="0.01" style="width:80px;">
+                </div>
+                <div class="control-group">
+                    <label>Momentum (μ)</label>
+                    <input type="number" id="bpnn-momentum" value="0.85" step="0.05" min="0" max="0.99"
+                        style="width:80px;">
+                </div>
+                <div class="control-group">
+                    <label>Set Point MSE (0.0001%)</label>
+                    <input type="text" id="bpnn-target-mse" value="0.000001" style="width:110px;">
+                </div>
+                <div class="control-group" style="justify-content:center; padding-bottom:8px;">
+                    <span style="color:#ff6b81;font-weight:700;font-size:0.88rem;">Epoch: ∞ (Fast)</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-end;">
+                    <button class="btn btn-primary" id="btn-train" onclick="startTraining()">▶ Latih BPNN</button>
+                    <button class="btn btn-dark" id="btn-stop" onclick="stopTraining()" disabled>■ Stop</button>
+                </div>
+            </div>
+
+            <div class="bpnn-layout">
+                <!-- KANVAS INPUT & PREDIKSI -->
+                <div class="panel-card">
+                    <div class="panel-title">Kanvas Prediksi (28×28)</div>
+                    <canvas id="draw-canvas" width="28" height="28"></canvas>
+
+                    <div style="display:flex;gap:6px;margin-top:10px;">
+                        <button class="btn btn-primary" style="flex:1;justify-content:center;"
+                            onclick="predictCanvas()">Prediksi</button>
+                        <button class="btn btn-dark" style="flex:1;justify-content:center;"
+                            onclick="clearDrawCanvas()">Bersihkan</button>
+                    </div>
+                    <div style="display:flex;gap:6px;margin-top:6px;">
+                        <button class="btn btn-secondary" style="flex:1;justify-content:center;"
+                            onclick="testRandomSample()">🎲 Uji Sampel Acak</button>
+                    </div>
+                    <div
+                        style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:0.82rem;color:#ccc;">
+                        <label>Kuas:
+                            <select id="brush-size"
+                                style="background:#1a1a2e;color:#fff;border:1px solid #333;border-radius:5px;padding:2px 6px;">
+                                <option value="1">1</option>
+                                <option value="2" selected>2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+                            <input type="checkbox" id="chk-autocenter" checked style="accent-color:#e94560;">
+                            Auto-Center
+                        </label>
+                    </div>
+
+                    <div class="pred-result" id="pred-result">Hasil: -</div>
+                    <div class="prob-bars" id="prob-bars"></div>
+                </div>
+
+                <!-- GRAFIK & EVALUASI -->
+                <div>
+                    <div class="charts-row">
+                        <div class="panel-card">
+                            <div class="panel-title">MSE vs Epoch</div>
+                            <canvas id="chart-mse" class="chart-canvas" width="460" height="220"></canvas>
+                        </div>
+                        <div class="panel-card">
+                            <div class="panel-title">Akurasi vs Epoch (%)</div>
+                            <canvas id="chart-acc" class="chart-canvas" width="460" height="220"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="eval-row">
+                        <div class="panel-card">
+                            <div class="panel-title">Confusion Matrix (Data Uji 10%)</div>
+                            <div id="cm-container" style="overflow-x:auto;color:#8892b0;font-size:0.82rem;">
+                                Klik '▶ Latih BPNN' untuk melihat Confusion Matrix.
+                            </div>
+                        </div>
+                        <div class="panel-card">
+                            <div class="panel-title">Log Training & Diagnosis</div>
+                            <div class="log-box" id="bpnn-log">Siap melatih BPNN (784-16-16-10) dengan dataset yang
+                                aktif.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+        <span class="status-text" id="status-text">Siap. Klik 'Generate' untuk membuat dataset.</span>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
         </div>
     </div>
-</div>
 
-<!-- TAB 3: STATS -->
-<div id="tab-stats" class="tab-content">
-    <div class="stats-container">
-        <div class="stat-card">
-            <h3>📊 Distribusi Jumlah Citra per Angka</h3>
-            <div class="bar-chart" id="chart-distribution"></div>
-        </div>
-        <div class="stat-card">
-            <h3>📈 Densitas Piksel Rata-rata per Angka</h3>
-            <div class="bar-chart" id="chart-density"></div>
-        </div>
-    </div>
-    <div class="stat-card" style="margin-top:16px;">
-        <h3>📋 Ringkasan Dataset</h3>
-        <p id="stats-summary" style="color:#8892b0;line-height:1.8;">Klik 'Generate' untuk melihat statistik.</p>
-    </div>
-</div>
+    <script>
+        // =====================================================================
+        //  1. SEEDED RANDOM (Mulberry32)
+        // =====================================================================
+        function mulberry32(seed) {
+            return function () {
+                seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+                let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+                t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+                return ((t ^ t >>> 14) >>> 0) / 4294967296;
+            };
+        }
 
-</div>
+        let rng = mulberry32(42);
+        function rngInt(min, max) { return Math.floor(rng() * (max - min)) + min; }
+        function rngFloat(min, max) { return rng() * (max - min) + min; }
 
-<!-- STATUS BAR -->
-<div class="status-bar">
-    <span class="status-text" id="status-text">Siap. Klik 'Generate' untuk membuat dataset.</span>
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-</div>
+        // =====================================================================
+        //  2. DIGIT RENDERING & AUTO-CENTER (28x28)
+        // =====================================================================
+        const FONTS = [
+            'bold {s}px sans-serif',
+            'bold {s}px serif',
+            '{s}px monospace',
+            'italic bold {s}px serif',
+            'bold {s}px system-ui',
+            '{s}px Georgia',
+            'bold {s}px Courier New',
+        ];
 
-<script>
-// =====================================================================
-//  SEEDED RANDOM (Mulberry32)
-// =====================================================================
-function mulberry32(seed) {
-    return function() {
-        seed |= 0; seed = seed + 0x6D2B79F5 | 0;
-        let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
-        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-        return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-}
+        const workCanvas = document.createElement('canvas');
+        workCanvas.width = 28; workCanvas.height = 28;
+        const workCtx = workCanvas.getContext('2d', { willReadFrequently: true });
 
-let rng = mulberry32(42);
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = 28; tempCanvas.height = 28;
+        const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
 
-function rngInt(min, max) { return Math.floor(rng() * (max - min)) + min; }
-function rngFloat(min, max) { return rng() * (max - min) + min; }
+        function centerBinaryPixels(pixels) {
+            let minX = 28, minY = 28, maxX = -1, maxY = -1;
+            for (let y = 0; y < 28; y++) {
+                for (let x = 0; x < 28; x++) {
+                    if (pixels[y * 28 + x] > 0) {
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
+                    }
+                }
+            }
+            if (maxX < minX) return pixels;
 
-// =====================================================================
-//  DIGIT RENDERING (Canvas 28x28)
-// =====================================================================
-const FONTS = [
-    'bold {s}px sans-serif',
-    'bold {s}px serif',
-    '{s}px monospace',
-    'italic bold {s}px serif',
-    'bold {s}px system-ui',
-    '{s}px Georgia',
-    'bold {s}px Courier New',
-];
+            const w = maxX - minX + 1;
+            const h = maxY - minY + 1;
+            const scale = 20.0 / Math.max(w, h);
+            const nw = Math.max(1, Math.round(w * scale));
+            const nh = Math.max(1, Math.round(h * scale));
+            const ox = Math.floor((28 - nw) / 2);
+            const oy = Math.floor((28 - nh) / 2);
 
-function generateDigitImage(digit, options = {}) {
-    const c = document.createElement('canvas');
-    c.width = 28; c.height = 28;
-    const ctx = c.getContext('2d');
+            // Draw source to tempCanvas
+            const imgData = tempCtx.createImageData(28, 28);
+            for (let i = 0; i < 784; i++) {
+                const v = pixels[i] ? 255 : 0;
+                imgData.data[i * 4] = v;
+                imgData.data[i * 4 + 1] = v;
+                imgData.data[i * 4 + 2] = v;
+                imgData.data[i * 4 + 3] = 255;
+            }
+            tempCtx.putImageData(imgData, 0, 0);
 
-    // Parameters
-    const fontIdx = options.fontIdx ?? rngInt(0, FONTS.length);
-    const fontSize = options.skala ? Math.round(options.skala * 28) : rngInt(16, 26);
-    const rotation = options.sudut ?? rngFloat(-15, 15);
-    const offsetX = options.offsetX ?? rngFloat(-2, 2);
-    const offsetY = options.offsetY ?? rngFloat(-2, 2);
-    const noiseLevel = options.noise ?? 0;
-    const blur = options.blur ?? false;
+            workCtx.fillStyle = '#000';
+            workCtx.fillRect(0, 0, 28, 28);
+            workCtx.drawImage(tempCanvas, minX, minY, w, h, ox, oy, nw, nh);
 
-    // Clear
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, 28, 28);
+            const outData = workCtx.getImageData(0, 0, 28, 28).data;
+            const out = new Uint8Array(784);
+            for (let i = 0; i < 784; i++) {
+                out[i] = outData[i * 4] > 80 ? 1 : 0;
+            }
+            return out;
+        }
 
-    // Draw digit
-    ctx.save();
-    ctx.translate(14 + offsetX, 14 + offsetY);
-    ctx.rotate(rotation * Math.PI / 180);
-    ctx.fillStyle = '#fff';
-    ctx.font = FONTS[fontIdx % FONTS.length].replace('{s}', fontSize);
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(String(digit), 0, 0);
-    ctx.restore();
+        function generateDigitPixels(digit, options = {}) {
+            const fontIdx = options.fontIdx ?? rngInt(0, FONTS.length);
+            const fontSize = options.skala ? Math.round(options.skala * 28) : rngInt(17, 25);
+            const rotation = options.sudut ?? rngFloat(-14, 14);
+            const offsetX = options.offsetX ?? rngFloat(-2, 2);
+            const offsetY = options.offsetY ?? rngFloat(-2, 2);
+            const noiseLevel = options.noise ?? 0;
+            const blur = options.blur ?? false;
 
-    // Blur
-    if (blur) {
-        ctx.filter = 'blur(0.8px)';
-        ctx.drawImage(c, 0, 0);
-        ctx.filter = 'none';
-    }
+            workCtx.fillStyle = '#000';
+            workCtx.fillRect(0, 0, 28, 28);
 
-    // Noise
-    if (noiseLevel > 0) {
-        const imgData = ctx.getImageData(0, 0, 28, 28);
-        const data = imgData.data;
-        for (let i = 0; i < data.length; i += 4) {
-            const r = rng();
-            if (r < noiseLevel / 2) {
-                data[i] = data[i+1] = data[i+2] = 0;
-            } else if (r > 1 - noiseLevel / 2) {
-                data[i] = data[i+1] = data[i+2] = 255;
+            workCtx.save();
+            workCtx.translate(14 + offsetX, 14 + offsetY);
+            workCtx.rotate(rotation * Math.PI / 180);
+            workCtx.fillStyle = '#fff';
+            workCtx.font = FONTS[fontIdx % FONTS.length].replace('{s}', fontSize);
+            workCtx.textAlign = 'center';
+            workCtx.textBaseline = 'middle';
+            workCtx.fillText(String(digit), 0, 0);
+            workCtx.restore();
+
+            if (blur) {
+                workCtx.filter = 'blur(0.7px)';
+                workCtx.drawImage(workCanvas, 0, 0);
+                workCtx.filter = 'none';
+            }
+
+            const imgData = workCtx.getImageData(0, 0, 28, 28).data;
+            let pixels = new Uint8Array(784);
+            for (let i = 0; i < 784; i++) {
+                let v = imgData[i * 4] > 90 ? 1 : 0;
+                if (noiseLevel > 0) {
+                    const r = rng();
+                    if (r < noiseLevel / 2) v = 0;
+                    else if (r > 1 - noiseLevel / 2) v = 1;
+                }
+                pixels[i] = v;
+            }
+
+            pixels = centerBinaryPixels(pixels);
+            let activePixels = 0;
+            for (let i = 0; i < 784; i++) activePixels += pixels[i];
+            return { pixels, activePixels };
+        }
+
+        function drawPixelsToCanvas(pixels, canvas) {
+            const ctx = canvas.getContext('2d');
+            const imgData = ctx.createImageData(28, 28);
+            for (let i = 0; i < 784; i++) {
+                const v = pixels[i] ? 255 : 0;
+                imgData.data[i * 4] = v;
+                imgData.data[i * 4 + 1] = v;
+                imgData.data[i * 4 + 2] = v;
+                imgData.data[i * 4 + 3] = 255;
+            }
+            ctx.putImageData(imgData, 0, 0);
+        }
+
+        // =====================================================================
+        //  3. STATE & TABS
+        // =====================================================================
+        let generatedImages = []; // [{ digit, pixels: Uint8Array(784), activePixels }]
+        let currentPage = 0;
+        const perPage = 100;
+
+        function switchTab(name) {
+            const names = ['gallery', 'detail', 'stats', 'bpnn'];
+            document.querySelectorAll('.tab-btn').forEach((b, i) => {
+                b.classList.toggle('active', names[i] === name);
+            });
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+        }
+
+        function presetGenerate(nPerDigit) {
+            document.getElementById('inp-jumlah').value = nPerDigit;
+            for (let d = 0; d < 10; d++) document.getElementById('d' + d).checked = true;
+            generateAll();
+        }
+
+        // =====================================================================
+        //  4. GENERATE ALL & GALLERY
+        // =====================================================================
+        function generateAll() {
+            let jumlah = parseInt(document.getElementById('inp-jumlah').value) || 100;
+            if (jumlah < 50) {
+                jumlah = 50;
+                document.getElementById('inp-jumlah').value = 50;
+            }
+            const noise = parseFloat(document.getElementById('inp-noise').value) || 0;
+            const seed = parseInt(document.getElementById('inp-seed').value) || 42;
+            const blur = document.getElementById('inp-blur').checked;
+
+            const digits = [];
+            for (let d = 0; d < 10; d++) {
+                if (document.getElementById('d' + d).checked) digits.push(d);
+            }
+            if (digits.length === 0) { alert('Pilih minimal satu angka!'); return; }
+
+            rng = mulberry32(seed);
+            generatedImages = [];
+            const total = digits.length * jumlah;
+
+            setStatus(`Generating ${total} pola...`);
+            setProgress(0);
+
+            let count = 0;
+            const batchSize = 100;
+
+            function processBatch() {
+                const end = Math.min(count + batchSize, total);
+                while (count < end) {
+                    const digit = digits[Math.floor(count / jumlah)];
+                    const { pixels, activePixels } = generateDigitPixels(digit, { noise, blur });
+                    generatedImages.push({ digit, pixels, activePixels });
+                    count++;
+                }
+                setProgress(count / total * 100);
+                setStatus(`Generating... ${count}/${total} (${Math.round(count / total * 100)}%)`);
+
+                if (count < total) {
+                    setTimeout(processBatch, 0);
+                } else {
+                    currentPage = 0;
+                    updateGallery();
+                    updateStats();
+                    setStatus(`Selesai! ${total} pola (28×28) siap diunduh atau dilatih di BPNN Studio.`);
+                    setProgress(100);
+                    document.getElementById('download-section').style.display = 'block';
+                }
+            }
+            processBatch();
+        }
+
+        function getFilteredImages() {
+            const filterVal = document.getElementById('filter-gallery').value;
+            if (filterVal === 'all') return generatedImages;
+            const target = parseInt(filterVal);
+            return generatedImages.filter(item => item.digit === target);
+        }
+
+        function updateGallery() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '';
+
+            const list = getFilteredImages();
+            const totalPages = Math.max(1, Math.ceil(list.length / perPage));
+            if (currentPage >= totalPages) currentPage = totalPages - 1;
+
+            const start = currentPage * perPage;
+            const end = Math.min(start + perPage, list.length);
+
+            document.getElementById('page-info').textContent = `Halaman ${currentPage + 1} / ${totalPages}`;
+            document.getElementById('total-info').textContent = `Menampilkan ${list.length} dari ${generatedImages.length} pola`;
+
+            for (let i = start; i < end; i++) {
+                const item = list[i];
+                const div = document.createElement('div');
+                div.className = 'gallery-item';
+
+                const c = document.createElement('canvas');
+                c.width = 28; c.height = 28;
+                drawPixelsToCanvas(item.pixels, c);
+                div.appendChild(c);
+
+                const tag = document.createElement('span');
+                tag.className = 'digit-tag';
+                tag.textContent = item.digit;
+                div.appendChild(tag);
+
+                grid.appendChild(div);
             }
         }
-        ctx.putImageData(imgData, 0, 0);
-    }
 
-    // Binarize
-    const imgData = ctx.getImageData(0, 0, 28, 28);
-    const data = imgData.data;
-    let activePixels = 0;
-    for (let i = 0; i < data.length; i += 4) {
-        const v = data[i] > 90 ? 255 : 0;
-        data[i] = data[i+1] = data[i+2] = v;
-        if (v > 0) activePixels++;
-    }
-    ctx.putImageData(imgData, 0, 0);
-
-    return { canvas: c, activePixels };
-}
-
-// =====================================================================
-//  STATE
-// =====================================================================
-let generatedImages = [];   // [{digit, canvas, activePixels}, ...]
-let currentPage = 0;
-const perPage = 100;
-
-// =====================================================================
-//  TAB SWITCHING
-// =====================================================================
-function switchTab(name) {
-    document.querySelectorAll('.tab-btn').forEach((b, i) => {
-        b.classList.toggle('active', ['gallery','detail','stats'][i] === name);
-    });
-    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-}
-
-// =====================================================================
-//  GENERATE ALL
-// =====================================================================
-function generateAll() {
-    const jumlah = Math.max(1, parseInt(document.getElementById('inp-jumlah').value) || 30);
-    const noise = parseFloat(document.getElementById('inp-noise').value) || 0;
-    const seed = parseInt(document.getElementById('inp-seed').value) || 42;
-    const blur = document.getElementById('inp-blur').checked;
-
-    const digits = [];
-    for (let d = 0; d < 10; d++) {
-        if (document.getElementById('d' + d).checked) digits.push(d);
-    }
-    if (digits.length === 0) { alert('Pilih minimal satu angka!'); return; }
-
-    rng = mulberry32(seed);
-    generatedImages = [];
-    const total = digits.length * jumlah;
-
-    setStatus(`Generating ${total} gambar...`);
-    setProgress(0);
-
-    // Use setTimeout for non-blocking generation
-    let count = 0;
-    const batchSize = 20;
-
-    function processBatch() {
-        const end = Math.min(count + batchSize, total);
-        while (count < end) {
-            const dIdx = Math.floor(count / jumlah);
-            const digit = digits[dIdx];
-            const { canvas, activePixels } = generateDigitImage(digit, { noise, blur });
-            generatedImages.push({ digit, canvas, activePixels });
-            count++;
+        function prevPage() { if (currentPage > 0) { currentPage--; updateGallery(); } }
+        function nextPage() {
+            const totalPages = Math.max(1, Math.ceil(getFilteredImages().length / perPage));
+            if (currentPage < totalPages - 1) { currentPage++; updateGallery(); }
         }
-        setProgress(count / total * 100);
-        setStatus(`Generating... ${count}/${total} (${Math.round(count/total*100)}%)`);
 
-        if (count < total) {
-            setTimeout(processBatch, 0);
-        } else {
-            currentPage = 0;
-            updateGallery();
-            updateStats();
-            setStatus(`Selesai! ${total} gambar berhasil di-generate.`);
+        // =====================================================================
+        //  5. SINGLE PREVIEW & VARIATIONS
+        // =====================================================================
+        function generateSingle() {
+            const digit = parseInt(document.getElementById('inp-single-digit').value);
+            const noise = parseFloat(document.getElementById('inp-noise').value) || 0;
+            const blur = document.getElementById('inp-blur').checked;
+            const skalaStr = document.getElementById('inp-skala').value.trim();
+            const rotasiStr = document.getElementById('inp-rotasi').value.trim();
+
+            const opts = { noise, blur };
+            if (skalaStr !== 'auto') opts.skala = parseFloat(skalaStr);
+            if (rotasiStr !== 'auto') opts.sudut = parseFloat(rotasiStr);
+
+            const { pixels, activePixels } = generateDigitPixels(digit, opts);
+            drawPixelsToCanvas(pixels, tempCanvas);
+
+            const bigC = document.getElementById('big-preview');
+            const bigCtx = bigC.getContext('2d');
+            bigCtx.imageSmoothingEnabled = false;
+            bigCtx.clearRect(0, 0, 168, 168);
+            bigCtx.drawImage(tempCanvas, 0, 0, 168, 168);
+
+            document.getElementById('preview-info').innerHTML =
+                `Digit&nbsp;&nbsp;&nbsp;&nbsp;: <strong style="color:#e94560">${digit}</strong><br>` +
+                `Ukuran&nbsp;&nbsp;&nbsp;: 28 × 28<br>` +
+                `Piksel 1 : ${activePixels}<br>` +
+                `Piksel 0 : ${784 - activePixels}<br>` +
+                `Densitas : ${(activePixels / 784 * 100).toFixed(1)}%`;
+        }
+
+        function generateVariations() {
+            generateSingle();
+            const digit = parseInt(document.getElementById('inp-single-digit').value);
+            const noise = parseFloat(document.getElementById('inp-noise').value) || 0;
+            const blur = document.getElementById('inp-blur').checked;
+
+            const grid = document.getElementById('variations-grid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < 25; i++) {
+                const { pixels } = generateDigitPixels(digit, { noise, blur });
+                const c = document.createElement('canvas');
+                c.width = 28; c.height = 28;
+                drawPixelsToCanvas(pixels, c);
+                grid.appendChild(c);
+            }
+        }
+
+        // =====================================================================
+        //  6. STATISTICS
+        // =====================================================================
+        function updateStats() {
+            if (generatedImages.length === 0) return;
+
+            const counts = new Array(10).fill(0);
+            const densitySums = new Array(10).fill(0);
+            let totalDensity = 0, minD = 100, maxD = 0;
+
+            generatedImages.forEach(item => {
+                counts[item.digit]++;
+                const d = item.activePixels / 784 * 100;
+                densitySums[item.digit] += d;
+                totalDensity += d;
+                if (d < minD) minD = d;
+                if (d > maxD) maxD = d;
+            });
+
+            const colors = ['#e74c3c', '#e67e22', '#f1c40f', '#2ecc71', '#1abc9c',
+                '#3498db', '#9b59b6', '#e91e63', '#607d8b', '#795548'];
+
+            const maxCount = Math.max(...counts, 1);
+            const distDiv = document.getElementById('chart-distribution');
+            distDiv.innerHTML = '';
+            for (let d = 0; d < 10; d++) {
+                distDiv.innerHTML += `
+            <div class="bar-col">
+                <span class="bar-value">${counts[d]}</span>
+                <div class="bar" style="background:${colors[d]};height:${(counts[d] / maxCount * 82)}%"></div>
+                <span class="bar-label">${d}</span>
+            </div>`;
+            }
+
+            const avgDensities = densitySums.map((s, i) => counts[i] > 0 ? s / counts[i] : 0);
+            const maxDensity = Math.max(...avgDensities, 1);
+            const densDiv = document.getElementById('chart-density');
+            densDiv.innerHTML = '';
+            for (let d = 0; d < 10; d++) {
+                densDiv.innerHTML += `
+            <div class="bar-col">
+                <span class="bar-value">${avgDensities[d].toFixed(1)}%</span>
+                <div class="bar" style="background:${colors[d]};height:${(avgDensities[d] / maxDensity * 82)}%"></div>
+                <span class="bar-label">${d}</span>
+            </div>`;
+            }
+
+            const avgAll = totalDensity / generatedImages.length;
+            document.getElementById('stats-summary').innerHTML =
+                `Total Citra: <strong>${generatedImages.length}</strong> &nbsp;|&nbsp; ` +
+                `Densitas Rata-rata: <strong>${avgAll.toFixed(1)}%</strong> &nbsp;|&nbsp; ` +
+                `Min: <strong>${minD.toFixed(1)}%</strong> &nbsp;|&nbsp; ` +
+                `Max: <strong>${maxD.toFixed(1)}%</strong>`;
+        }
+
+        // =====================================================================
+        //  7. DOWNLOAD ZIP & CSV
+        // =====================================================================
+        async function downloadZip() {
+            if (generatedImages.length === 0) { alert("Belum ada gambar! Klik 'Generate' dulu."); return; }
+            setStatus('Menyiapkan ZIP...');
+
+            if (typeof JSZip === 'undefined') {
+                await new Promise((resolve, reject) => {
+                    const s = document.createElement('script');
+                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                    s.onload = resolve;
+                    s.onerror = () => reject(new Error('Gagal memuat JSZip'));
+                    document.head.appendChild(s);
+                });
+            }
+
+            const zip = new JSZip();
+            const counters = new Array(10).fill(0);
+
+            for (let i = 0; i < generatedImages.length; i++) {
+                const item = generatedImages[i];
+                drawPixelsToCanvas(item.pixels, tempCanvas);
+                const folder = zip.folder(String(item.digit));
+                const num = counters[item.digit]++;
+                const blob = await new Promise(resolve => tempCanvas.toBlob(resolve, 'image/png'));
+                folder.file(`${item.digit}_${String(num).padStart(4, '0')}.png`, blob);
+                if (i % 80 === 0) setProgress(i / generatedImages.length * 100);
+            }
+
+            setStatus('Mengompresi file ZIP...');
+            const content = await zip.generateAsync({ type: 'blob' });
+            triggerDownload(content, `dataset_angka_${generatedImages.length}_pola.zip`);
+            setStatus(`ZIP berhasil di-download! (${generatedImages.length} gambar)`);
             setProgress(100);
-            document.getElementById('download-section').style.display = 'block';
         }
-    }
-    processBatch();
-}
 
-// =====================================================================
-//  GALLERY
-// =====================================================================
-function updateGallery() {
-    const grid = document.getElementById('gallery-grid');
-    grid.innerHTML = '';
+        function downloadCsv() {
+            if (generatedImages.length === 0) { alert("Belum ada data! Klik 'Generate' dulu."); return; }
+            setStatus('Menyiapkan file CSV...');
+            const header = ['label', ...Array.from({ length: 784 }, (_, i) => 'p' + i)].join(',');
+            const rows = [header];
+            for (let i = 0; i < generatedImages.length; i++) {
+                const item = generatedImages[i];
+                rows.push(item.digit + ',' + item.pixels.join(','));
+            }
+            const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            triggerDownload(blob, `dataset_angka_${generatedImages.length}_pola.csv`);
+            setStatus(`CSV berhasil di-download! (${generatedImages.length} baris)`);
+        }
 
-    const start = currentPage * perPage;
-    const end = Math.min(start + perPage, generatedImages.length);
-    const totalPages = Math.max(1, Math.ceil(generatedImages.length / perPage));
+        function triggerDownload(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
 
-    document.getElementById('page-info').textContent = `Halaman ${currentPage + 1} / ${totalPages}`;
-    document.getElementById('total-info').textContent = `Total: ${generatedImages.length} gambar`;
+        // =====================================================================
+        //  8. BPNN ENGINE (784 - 16 - 16 - 10) + NGUYEN-WIDROW + MOMENTUM (FAST)
+        // =====================================================================
+        class BPNN {
+            constructor(layers = [784, 16, 16, 10]) {
+                this.layers = layers;
+                this.W = [];
+                this.b = [];
+                this.vW = [];
+                this.vb = [];
+                this.initNguyenWidrow();
+            }
 
-    for (let i = start; i < end; i++) {
-        const item = generatedImages[i];
-        const div = document.createElement('div');
-        div.className = 'gallery-item';
+            initNguyenWidrow() {
+                this.W = []; this.b = []; this.vW = []; this.vb = [];
+                const localRng = mulberry32(42);
+                for (let l = 0; l < this.layers.length - 1; l++) {
+                    const nIn = this.layers[l], nOut = this.layers[l + 1];
+                    const W = new Float64Array(nIn * nOut);
+                    const b = new Float64Array(nOut);
+                    if (l < this.layers.length - 2) {
+                        const beta = 0.7 * Math.pow(nOut, 1.0 / nIn);
+                        for (let j = 0; j < nOut; j++) {
+                            let normSq = 0;
+                            for (let i = 0; i < nIn; i++) {
+                                const r = localRng() - 0.5;
+                                W[i * nOut + j] = r;
+                                normSq += r * r;
+                            }
+                            const norm = Math.sqrt(normSq) + 1e-12;
+                            for (let i = 0; i < nIn; i++) W[i * nOut + j] = beta * (W[i * nOut + j] / norm);
+                            b[j] = (localRng() * 2 - 1) * beta;
+                        }
+                    } else {
+                        for (let k = 0; k < W.length; k++) W[k] = localRng() - 0.5;
+                        for (let j = 0; j < nOut; j++) b[j] = localRng() - 0.5;
+                    }
+                    this.W.push(W);
+                    this.b.push(b);
+                    this.vW.push(new Float64Array(nIn * nOut));
+                    this.vb.push(new Float64Array(nOut));
+                }
+            }
 
-        const c = document.createElement('canvas');
-        c.width = 28; c.height = 28;
-        c.getContext('2d').drawImage(item.canvas, 0, 0);
-        div.appendChild(c);
+            forwardOne(x) {
+                const acts = [x];
+                let a = x;
+                for (let l = 0; l < this.W.length; l++) {
+                    const nIn = this.layers[l], nOut = this.layers[l + 1];
+                    const W = this.W[l], b = this.b[l];
+                    const next = new Float64Array(nOut);
+                    for (let j = 0; j < nOut; j++) {
+                        let sum = b[j];
+                        for (let i = 0; i < nIn; i++) {
+                            const xi = a[i];
+                            if (xi !== 0) sum += xi * W[i * nOut + j];
+                        }
+                        const c = sum < -30 ? -30 : (sum > 30 ? 30 : sum);
+                        next[j] = 1.0 / (1.0 + Math.exp(-c));
+                    }
+                    acts.push(next);
+                    a = next;
+                }
+                return acts;
+            }
 
-        const tag = document.createElement('span');
-        tag.className = 'digit-tag';
-        tag.textContent = item.digit;
-        div.appendChild(tag);
+            trainEpoch(X, labels, alpha = 0.8, momentum = 0.85, batchSize = 32) {
+                const n = X.length;
+                const idx = Array.from({ length: n }, (_, i) => i);
+                for (let i = n - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    const tmp = idx[i]; idx[i] = idx[j]; idx[j] = tmp;
+                }
 
-        grid.appendChild(div);
-    }
-}
+                const L = this.W.length;
+                const gW = this.W.map(w => new Float64Array(w.length));
+                const gb = this.b.map(b => new Float64Array(b.length));
 
-function prevPage() {
-    if (currentPage > 0) { currentPage--; updateGallery(); }
-}
-function nextPage() {
-    const totalPages = Math.max(1, Math.ceil(generatedImages.length / perPage));
-    if (currentPage < totalPages - 1) { currentPage++; updateGallery(); }
-}
+                for (let start = 0; start < n; start += batchSize) {
+                    const end = Math.min(start + batchSize, n);
+                    const bs = end - start;
+                    for (let l = 0; l < L; l++) { gW[l].fill(0); gb[l].fill(0); }
 
-// =====================================================================
-//  SINGLE PREVIEW & VARIATIONS
-// =====================================================================
-function generateSingle() {
-    const digit = parseInt(document.getElementById('inp-single-digit').value);
-    const noise = parseFloat(document.getElementById('inp-noise').value) || 0;
-    const blur = document.getElementById('inp-blur').checked;
-    const skalaStr = document.getElementById('inp-skala').value.trim();
-    const rotasiStr = document.getElementById('inp-rotasi').value.trim();
+                    for (let k = start; k < end; k++) {
+                        const sampleIdx = idx[k];
+                        const acts = this.forwardOne(X[sampleIdx]);
+                        const targetDigit = labels[sampleIdx];
 
-    const opts = { noise, blur };
-    if (skalaStr !== 'auto') opts.skala = parseFloat(skalaStr);
-    if (rotasiStr !== 'auto') opts.sudut = parseFloat(rotasiStr);
+                        const deltas = new Array(L);
+                        const out = acts[L];
+                        const dOut = new Float64Array(10);
+                        for (let j = 0; j < 10; j++) {
+                            const t = j === targetDigit ? 1.0 : 0.0;
+                            dOut[j] = (t - out[j]) * (out[j] * (1.0 - out[j]) + 0.01);
+                        }
+                        deltas[L - 1] = dOut;
 
-    const { canvas, activePixels } = generateDigitImage(digit, opts);
+                        for (let l = L - 2; l >= 0; l--) {
+                            const nCur = this.layers[l + 1], nNext = this.layers[l + 2];
+                            const Wnext = this.W[l + 1], dNext = deltas[l + 1], aCur = acts[l + 1];
+                            const dCur = new Float64Array(nCur);
+                            for (let i = 0; i < nCur; i++) {
+                                let s = 0;
+                                const row = i * nNext;
+                                for (let j = 0; j < nNext; j++) s += dNext[j] * Wnext[row + j];
+                                dCur[i] = s * (aCur[i] * (1.0 - aCur[i]) + 0.01);
+                            }
+                            deltas[l] = dCur;
+                        }
 
-    // Big preview
-    const bigC = document.getElementById('big-preview');
-    const bigCtx = bigC.getContext('2d');
-    bigCtx.imageSmoothingEnabled = false;
-    bigCtx.clearRect(0, 0, 168, 168);
-    bigCtx.drawImage(canvas, 0, 0, 168, 168);
+                        for (let l = 0; l < L; l++) {
+                            const nIn = this.layers[l], nOut = this.layers[l + 1];
+                            const aIn = acts[l], d = deltas[l], gwL = gW[l], gbL = gb[l];
+                            for (let j = 0; j < nOut; j++) gbL[j] += d[j];
+                            for (let i = 0; i < nIn; i++) {
+                                const ai = aIn[i];
+                                if (ai !== 0) {
+                                    const row = i * nOut;
+                                    for (let j = 0; j < nOut; j++) gwL[row + j] += ai * d[j];
+                                }
+                            }
+                        }
+                    }
 
-    // Info
-    document.getElementById('preview-info').innerHTML =
-        `Digit&nbsp;&nbsp;&nbsp;&nbsp;: <strong style="color:#e94560">${digit}</strong><br>` +
-        `Ukuran&nbsp;&nbsp;&nbsp;: 28 × 28<br>` +
-        `Piksel 1 : ${activePixels}<br>` +
-        `Piksel 0 : ${784 - activePixels}<br>` +
-        `Densitas : ${(activePixels/784*100).toFixed(1)}%`;
-}
+                    const scale = alpha / bs;
+                    for (let l = 0; l < L; l++) {
+                        const W = this.W[l], vW = this.vW[l], gwL = gW[l];
+                        for (let m = 0; m < W.length; m++) {
+                            vW[m] = scale * gwL[m] + momentum * vW[m];
+                            W[m] += vW[m];
+                        }
+                        const b = this.b[l], vb = this.vb[l], gbL = gb[l];
+                        for (let j = 0; j < b.length; j++) {
+                            vb[j] = scale * gbL[j] + momentum * vb[j];
+                            b[j] += vb[j];
+                        }
+                    }
+                }
+            }
 
-function generateVariations() {
-    generateSingle();
-    const digit = parseInt(document.getElementById('inp-single-digit').value);
-    const noise = parseFloat(document.getElementById('inp-noise').value) || 0;
-    const blur = document.getElementById('inp-blur').checked;
+            evaluate(X, labels) {
+                let sumSq = 0, correct = 0;
+                const cm = Array.from({ length: 10 }, () => new Array(10).fill(0));
+                for (let i = 0; i < X.length; i++) {
+                    const out = this.forwardOne(X[i])[this.W.length];
+                    const actual = labels[i];
+                    let bestJ = 0, bestVal = out[0];
+                    for (let j = 0; j < 10; j++) {
+                        const diff = (j === actual ? 1.0 : 0.0) - out[j];
+                        sumSq += diff * diff;
+                        if (out[j] > bestVal) { bestVal = out[j]; bestJ = j; }
+                    }
+                    if (bestJ === actual) correct++;
+                    cm[actual][bestJ]++;
+                }
+                return {
+                    mse: sumSq / (X.length * 10),
+                    acc: correct / X.length,
+                    cm
+                };
+            }
+        }
 
-    const grid = document.getElementById('variations-grid');
-    grid.innerHTML = '';
+        const model = new BPNN([784, 16, 16, 10]);
+        let splitData = null;
+        let isTraining = false;
+        let stopFlag = false;
+        let histEpoch = [], histMseTr = [], histMseVa = [], histAccTr = [], histAccVa = [];
 
-    for (let i = 0; i < 25; i++) {
-        const { canvas } = generateDigitImage(digit, { noise, blur });
-        const c = document.createElement('canvas');
-        c.width = 28; c.height = 28;
-        c.getContext('2d').drawImage(canvas, 0, 0);
-        grid.appendChild(c);
-    }
-}
+        function prepareSplitData() {
+            const byDigit = Array.from({ length: 10 }, () => []);
+            generatedImages.forEach(item => byDigit[item.digit].push(item));
 
-// =====================================================================
-//  STATISTICS
-// =====================================================================
-function updateStats() {
-    if (generatedImages.length === 0) return;
+            const trX = [], trY = [], vaX = [], vaY = [], teX = [], teY = [];
+            for (let d = 0; d < 10; d++) {
+                const arr = byDigit[d].slice();
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                const nTr = Math.floor(0.8 * arr.length);
+                const nVa = Math.floor(0.1 * arr.length);
+                arr.slice(0, nTr).forEach(it => { trX.push(it.pixels); trY.push(it.digit); });
+                arr.slice(nTr, nTr + nVa).forEach(it => { vaX.push(it.pixels); vaY.push(it.digit); });
+                arr.slice(nTr + nVa).forEach(it => { teX.push(it.pixels); teY.push(it.digit); });
+            }
+            splitData = { trX, trY, vaX, vaY, teX, teY };
+        }
 
-    const counts = new Array(10).fill(0);
-    const densitySums = new Array(10).fill(0);
-    let totalDensity = 0;
-    let minD = 100, maxD = 0;
+        function appendBpnnLog(msg) {
+            const box = document.getElementById('bpnn-log');
+            box.textContent += '\n' + msg;
+            box.scrollTop = box.scrollHeight;
+        }
 
-    generatedImages.forEach(item => {
-        counts[item.digit]++;
-        const d = item.activePixels / 784 * 100;
-        densitySums[item.digit] += d;
-        totalDensity += d;
-        if (d < minD) minD = d;
-        if (d > maxD) maxD = d;
-    });
+        function startTraining() {
+            if (isTraining) return;
+            if (generatedImages.length < 50) { alert('Generate dataset dulu minimal 50 pola!'); return; }
 
-    const colors = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#1abc9c',
-                     '#3498db','#9b59b6','#e91e63','#607d8b','#795548'];
+            const alpha = parseFloat(document.getElementById('bpnn-alpha').value) || 0.8;
+            const momentum = parseFloat(document.getElementById('bpnn-momentum').value) || 0.85;
+            const targetMse = parseFloat(document.getElementById('bpnn-target-mse').value) || 0.000001;
 
-    // Distribution chart
-    const maxCount = Math.max(...counts, 1);
-    const distDiv = document.getElementById('chart-distribution');
-    distDiv.innerHTML = '';
-    for (let d = 0; d < 10; d++) {
-        const col = document.createElement('div');
-        col.className = 'bar-col';
-        const val = document.createElement('span');
-        val.className = 'bar-value';
-        val.textContent = counts[d];
-        const bar = document.createElement('div');
-        bar.className = 'bar';
-        bar.style.background = colors[d];
-        bar.style.height = (counts[d] / maxCount * 100) + '%';
-        const lbl = document.createElement('span');
-        lbl.className = 'bar-label';
-        lbl.textContent = d;
-        col.appendChild(val);
-        col.appendChild(bar);
-        col.appendChild(lbl);
-        distDiv.appendChild(col);
-    }
+            prepareSplitData();
+            model.initNguyenWidrow();
+            histEpoch = []; histMseTr = []; histMseVa = []; histAccTr = []; histAccVa = [];
 
-    // Density chart
-    const avgDensities = densitySums.map((s, i) => counts[i] > 0 ? s / counts[i] : 0);
-    const maxDensity = Math.max(...avgDensities, 1);
-    const densDiv = document.getElementById('chart-density');
-    densDiv.innerHTML = '';
-    for (let d = 0; d < 10; d++) {
-        const col = document.createElement('div');
-        col.className = 'bar-col';
-        const val = document.createElement('span');
-        val.className = 'bar-value';
-        val.textContent = avgDensities[d].toFixed(1) + '%';
-        const bar = document.createElement('div');
-        bar.className = 'bar';
-        bar.style.background = colors[d];
-        bar.style.height = (avgDensities[d] / maxDensity * 100) + '%';
-        const lbl = document.createElement('span');
-        lbl.className = 'bar-label';
-        lbl.textContent = d;
-        col.appendChild(val);
-        col.appendChild(bar);
-        col.appendChild(lbl);
-        densDiv.appendChild(col);
-    }
+            isTraining = true;
+            stopFlag = false;
+            document.getElementById('btn-train').disabled = true;
+            document.getElementById('btn-stop').disabled = false;
+            document.getElementById('bpnn-log').textContent =
+                `Memulai Fast Training (Epoch ∞) | Data: ${splitData.trX.length} Latih, ${splitData.vaX.length} Val, ${splitData.teX.length} Uji\nTarget Set Point MSE <= ${targetMse.toFixed(7)} (${(targetMse * 100).toFixed(4)}%)`;
 
-    const avgAll = totalDensity / generatedImages.length;
-    document.getElementById('stats-summary').innerHTML =
-        `Total Citra: <strong>${generatedImages.length}</strong> &nbsp;|&nbsp; ` +
-        `Densitas Rata-rata: <strong>${avgAll.toFixed(1)}%</strong> &nbsp;|&nbsp; ` +
-        `Min: <strong>${minD.toFixed(1)}%</strong> &nbsp;|&nbsp; ` +
-        `Max: <strong>${maxD.toFixed(1)}%</strong>`;
-}
+            let ep = 0;
 
-// =====================================================================
-//  DOWNLOAD AS ZIP (using JSZip from CDN)
-// =====================================================================
-async function downloadZip() {
-    if (generatedImages.length === 0) {
-        alert("Belum ada gambar! Klik 'Generate' dulu.");
-        return;
-    }
+            function step() {
+                if (stopFlag) { finishTraining('Dihentikan manual', targetMse); return; }
 
-    setStatus('Menyiapkan ZIP...');
+                // Jalankan beberapa epoch per frame agar sangat cepat
+                const epochsPerTick = splitData.trX.length > 1500 ? 1 : 3;
+                let reached = false;
+                let lastTr, lastVa;
 
-    // Dynamically load JSZip
-    if (typeof JSZip === 'undefined') {
-        await new Promise((resolve, reject) => {
-            const s = document.createElement('script');
-            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-            s.onload = resolve;
-            s.onerror = () => reject(new Error('Gagal memuat JSZip'));
-            document.head.appendChild(s);
+                for (let k = 0; k < epochsPerTick; k++) {
+                    ep++;
+                    model.trainEpoch(splitData.trX, splitData.trY, alpha, momentum, 32);
+                    lastTr = model.evaluate(splitData.trX, splitData.trY);
+                    lastVa = model.evaluate(splitData.vaX, splitData.vaY);
+
+                    histEpoch.push(ep);
+                    histMseTr.push(lastTr.mse);
+                    histMseVa.push(lastVa.mse);
+                    histAccTr.push(lastTr.acc * 100);
+                    histAccVa.push(lastVa.acc * 100);
+
+                    if (lastTr.mse <= targetMse) { reached = true; break; }
+                }
+
+                setStatus(`Epoch ${ep} (∞) | MSE Latih: ${lastTr.mse.toFixed(7)} | Val: ${lastVa.mse.toFixed(7)} | Acc: ${(lastTr.acc * 100).toFixed(1)}%`);
+                if (ep <= 3 || ep % 15 === 0 || reached) {
+                    appendBpnnLog(`Epoch ${String(ep).padStart(4)} | MSE_tr=${lastTr.mse.toFixed(7)} | MSE_va=${lastVa.mse.toFixed(7)} | Acc_tr=${(lastTr.acc * 100).toFixed(1)}%`);
+                    drawTrainingCharts(targetMse);
+                }
+
+                if (reached) {
+                    finishTraining(`Set Point MSE <= ${targetMse.toFixed(7)} tercapai`, targetMse);
+                } else {
+                    setTimeout(step, 0);
+                }
+            }
+            setTimeout(step, 0);
+        }
+
+        function stopTraining() { stopFlag = true; }
+
+        function finishTraining(reason, targetMse) {
+            isTraining = false;
+            document.getElementById('btn-train').disabled = false;
+            document.getElementById('btn-stop').disabled = true;
+
+            drawTrainingCharts(targetMse);
+            const tr = model.evaluate(splitData.trX, splitData.trY);
+            const va = model.evaluate(splitData.vaX, splitData.vaY);
+            const te = model.evaluate(splitData.teX, splitData.teY);
+
+            renderConfusionMatrix(te.cm);
+            const gap = (tr.acc - va.acc) * 100;
+            const diag = tr.acc < 0.7 ? 'UNDERFITTING' : (gap > 12 ? 'TERINDIKASI OVERFITTING' : 'GENERALISASI BAIK / OPTIMAL');
+
+            appendBpnnLog(
+                `\nSELESAI (${reason}) pada Epoch ${histEpoch.length}\n` +
+                `Latih : MSE=${tr.mse.toFixed(7)} | Acc=${(tr.acc * 100).toFixed(2)}%\n` +
+                `Val   : MSE=${va.mse.toFixed(7)} | Acc=${(va.acc * 100).toFixed(2)}%\n` +
+                `Uji   : MSE=${te.mse.toFixed(7)} | Acc=${(te.acc * 100).toFixed(2)}%\n` +
+                `Status: ${diag} (Gap Latih-Val: ${gap.toFixed(2)}%)`
+            );
+            setStatus(`Selesai (${reason}) | Akurasi Uji: ${(te.acc * 100).toFixed(2)}%`);
+            setProgress(100);
+        }
+
+        function drawLineChart(canvasId, series, yMaxFixed = null, refLine = null) {
+            const c = document.getElementById(canvasId);
+            const ctx = c.getContext('2d');
+            const W = c.width, H = c.height;
+            const pad = { l: 48, r: 16, t: 18, b: 28 };
+
+            ctx.fillStyle = '#0c0c16';
+            ctx.fillRect(0, 0, W, H);
+
+            const n = histEpoch.length;
+            if (n === 0) return;
+
+            let yMax = yMaxFixed ?? Math.max(...series[0].data, ...series[1].data, 0.01);
+            const yMin = 0;
+
+            // Grid
+            ctx.strokeStyle = '#222238';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#8892b0';
+            ctx.font = '10px Consolas';
+            for (let g = 0; g <= 4; g++) {
+                const y = pad.t + (H - pad.t - pad.b) * (g / 4);
+                ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+                const val = yMax * (1 - g / 4);
+                ctx.fillText(yMaxFixed ? val.toFixed(0) + '%' : val.toFixed(4), 4, y + 3);
+            }
+
+            if (refLine !== null && yMax > 0) {
+                const ry = pad.t + (H - pad.t - pad.b) * (1 - Math.min(refLine / yMax, 1));
+                ctx.strokeStyle = '#94a3b8';
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath(); ctx.moveTo(pad.l, ry); ctx.lineTo(W - pad.r, ry); ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            series.forEach(s => {
+                ctx.strokeStyle = s.color;
+                ctx.lineWidth = 2;
+                if (s.dashed) ctx.setLineDash([5, 3]);
+                ctx.beginPath();
+                for (let i = 0; i < n; i++) {
+                    const x = pad.l + (n === 1 ? 0 : (i / (n - 1)) * (W - pad.l - pad.r));
+                    const y = pad.t + (1 - Math.min(Math.max(s.data[i], yMin) / yMax, 1)) * (H - pad.t - pad.b);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
+
+            // Legend
+            ctx.font = '11px Segoe UI';
+            series.forEach((s, idx) => {
+                ctx.fillStyle = s.color;
+                ctx.fillText('■ ' + s.label, pad.l + idx * 120, H - 8);
+            });
+        }
+
+        function drawTrainingCharts(targetMse) {
+            drawLineChart('chart-mse', [
+                { label: 'MSE Latih', data: histMseTr, color: '#ff6b6b', dashed: false },
+                { label: 'MSE Validasi', data: histMseVa, color: '#ffd166', dashed: true }
+            ], null, targetMse);
+
+            drawLineChart('chart-acc', [
+                { label: 'Acc Latih', data: histAccTr, color: '#4ade80', dashed: false },
+                { label: 'Acc Validasi', data: histAccVa, color: '#60a5fa', dashed: true }
+            ], 100, null);
+        }
+
+        function renderConfusionMatrix(cm) {
+            let maxV = 1;
+            cm.forEach(r => r.forEach(v => { if (v > maxV) maxV = v; }));
+
+            let html = '<table class="cm-table"><thead><tr><th>A\\P</th>';
+            for (let d = 0; d < 10; d++) html += `<th>${d}</th>`;
+            html += '</tr></thead><tbody>';
+            for (let i = 0; i < 10; i++) {
+                html += `<tr><th>${i}</th>`;
+                for (let j = 0; j < 10; j++) {
+                    const v = cm[i][j];
+                    const alpha = v > 0 ? (0.15 + 0.75 * (v / maxV)) : 0;
+                    const bg = i === j ? `rgba(233, 69, 96, ${alpha})` : `rgba(83, 216, 251, ${alpha * 0.7})`;
+                    html += `<td style="background:${bg};color:${v > 0 ? '#fff' : '#555'}">${v}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+            document.getElementById('cm-container').innerHTML = html;
+        }
+
+        // =====================================================================
+        //  9. KANVAS GAMBAR INTERAKTIF & PREDIKSI
+        // =====================================================================
+        const drawCanvas = document.getElementById('draw-canvas');
+        const drawCtx = drawCanvas.getContext('2d', { willReadFrequently: true });
+        let isDrawing = false;
+        let lastPt = null;
+
+        function clearDrawCanvas() {
+            drawCtx.fillStyle = '#000';
+            drawCtx.fillRect(0, 0, 28, 28);
+            document.getElementById('pred-result').textContent = 'Hasil: -';
+            renderProbBars(new Array(10).fill(0));
+        }
+
+        function getCanvasPoint(e) {
+            const rect = drawCanvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: Math.floor(((clientX - rect.left) / rect.width) * 28),
+                y: Math.floor(((clientY - rect.top) / rect.height) * 28)
+            };
+        }
+
+        function drawStroke(p1, p2) {
+            const size = parseInt(document.getElementById('brush-size').value) || 2;
+            drawCtx.strokeStyle = '#fff';
+            drawCtx.lineWidth = size;
+            drawCtx.lineCap = 'round';
+            drawCtx.beginPath();
+            drawCtx.moveTo(p1.x + 0.5, p1.y + 0.5);
+            drawCtx.lineTo(p2.x + 0.5, p2.y + 0.5);
+            drawCtx.stroke();
+        }
+
+        drawCanvas.addEventListener('pointerdown', e => {
+            isDrawing = true;
+            lastPt = getCanvasPoint(e);
+            drawStroke(lastPt, lastPt);
         });
-    }
+        drawCanvas.addEventListener('pointermove', e => {
+            if (!isDrawing) return;
+            const pt = getCanvasPoint(e);
+            drawStroke(lastPt, pt);
+            lastPt = pt;
+        });
+        window.addEventListener('pointerup', () => { isDrawing = false; lastPt = null; });
 
-    const zip = new JSZip();
-    const counters = new Array(10).fill(0);
+        function renderProbBars(probs) {
+            const container = document.getElementById('prob-bars');
+            let bestJ = 0, bestVal = -1;
+            for (let i = 0; i < 10; i++) if (probs[i] > bestVal) { bestVal = probs[i]; bestJ = i; }
 
-    for (let i = 0; i < generatedImages.length; i++) {
-        const item = generatedImages[i];
-        const folder = zip.folder(String(item.digit));
-        const num = counters[item.digit]++;
-        const blob = await new Promise(resolve => item.canvas.toBlob(resolve, 'image/png'));
-        folder.file(`${item.digit}_${String(num).padStart(4, '0')}.png`, blob);
-        if (i % 50 === 0) setProgress(i / generatedImages.length * 100);
-    }
+            container.innerHTML = '';
+            for (let i = 0; i < 10; i++) {
+                const pct = Math.max(0, Math.min(100, probs[i] * 100));
+                const col = (i === bestJ && bestVal > 0) ? '#e94560' : '#3a4a68';
+                container.innerHTML += `
+            <div class="bar-col">
+                <div class="bar" style="background:${col};height:${pct * 0.8}%"></div>
+                <span class="bar-label">${i}</span>
+            </div>`;
+            }
+        }
 
-    setStatus('Membuat file ZIP...');
-    const content = await zip.generateAsync({ type: 'blob' });
-    const url = URL.createObjectURL(content);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'dataset_angka_28x28.zip';
-    a.click();
-    URL.revokeObjectURL(url);
+        function predictCanvas(actualLabel = null, allowCenter = true) {
+            const data = drawCtx.getImageData(0, 0, 28, 28).data;
+            let pixels = new Uint8Array(784);
+            let anyOn = false;
+            for (let i = 0; i < 784; i++) {
+                pixels[i] = data[i * 4] > 60 ? 1 : 0;
+                if (pixels[i]) anyOn = true;
+            }
 
-    setStatus(`ZIP berhasil di-download! (${generatedImages.length} gambar)`);
-    setProgress(100);
-}
+            if (allowCenter && anyOn && document.getElementById('chk-autocenter').checked) {
+                pixels = centerBinaryPixels(pixels);
+                drawPixelsToCanvas(pixels, drawCanvas);
+            }
 
-// =====================================================================
-//  HELPERS
-// =====================================================================
-function setStatus(text) {
-    document.getElementById('status-text').textContent = text;
-}
-function setProgress(pct) {
-    document.getElementById('progress-fill').style.width = pct + '%';
-}
+            const out = model.forwardOne(pixels)[model.W.length];
+            let bestJ = 0, bestVal = out[0];
+            for (let j = 1; j < 10; j++) if (out[j] > bestVal) { bestVal = out[j]; bestJ = j; }
 
-// Initial preview
-window.addEventListener('load', () => {
-    rng = mulberry32(42);
-    generateAll();
-});
-</script>
+            if (actualLabel !== null) {
+                document.getElementById('pred-result').innerHTML =
+                    `Prediksi: <span style="color:#53d8fb">${bestJ}</span> (Asli: ${actualLabel})`;
+            } else {
+                document.getElementById('pred-result').innerHTML =
+                    `Hasil: <span style="color:#ff6b81">${bestJ}</span> (${(bestVal * 100).toFixed(1)}%)`;
+            }
+            renderProbBars(out);
+        }
+
+        function testRandomSample() {
+            const pool = (splitData && splitData.teX.length > 0) ? splitData.teX : generatedImages.map(g => g.pixels);
+            const labels = (splitData && splitData.teY.length > 0) ? splitData.teY : generatedImages.map(g => g.digit);
+            if (pool.length === 0) return;
+            const idx = Math.floor(Math.random() * pool.length);
+            drawPixelsToCanvas(pool[idx], drawCanvas);
+            predictCanvas(labels[idx], false);
+        }
+
+        // =====================================================================
+        //  10. HELPERS & INIT
+        // =====================================================================
+        function setStatus(text) { document.getElementById('status-text').textContent = text; }
+        function setProgress(pct) { document.getElementById('progress-fill').style.width = pct + '%'; }
+
+        window.addEventListener('load', () => {
+            clearDrawCanvas();
+            rng = mulberry32(42);
+            generateAll();
+        });
+    </script>
 
 </body>
+
 </html>
