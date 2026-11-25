@@ -37,7 +37,6 @@
     </script>
 
     <style>
-        /* Custom Scrollbars */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -93,12 +92,10 @@
                             stroke-width="4" />
                         <path d="M50 12 L82 31 L82 69 L50 88 L18 69 L18 31 Z" stroke="#ff4d4f" stroke-width="2"
                             stroke-dasharray="4 2" />
-                        <!-- Monogram M -->
                         <path d="M30 68 V32 L50 52 L70 32 V68" stroke="#ffffff" stroke-width="6" stroke-linecap="round"
                             stroke-linejoin="round" />
                         <path d="M30 68 V32 L50 52 L70 32 V68" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round"
                             stroke-linejoin="round" />
-                        <!-- Neural nodes -->
                         <circle cx="30" cy="32" r="3.5" fill="#ff4d4f" />
                         <circle cx="50" cy="52" r="4" fill="#ffffff" />
                         <circle cx="70" cy="32" r="3.5" fill="#ff4d4f" />
@@ -219,8 +216,8 @@
                     <div>
                         <div class="flex justify-between items-center mb-3">
                             <h2 class="font-bold text-sm text-gray-200 flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-brand-crimson"></span> Kanvas Digigit 28x28
-                                (Interaktif)
+                                <span class="w-2 h-2 rounded-full bg-brand-crimson"></span> Kanvas Digit 28x28
+                                (Halus)
                             </h2>
                             <span class="text-xs font-mono text-gray-400">Standard Grid 784 Dynamic</span>
                         </div>
@@ -231,7 +228,6 @@
                                 class="relative bg-black rounded-lg p-1.5 border-2 border-brand-maroon/60 shadow-inner group">
                                 <canvas id="drawCanvas" width="280" height="280"
                                     class="rounded bg-black cursor-crosshair block touch-none"></canvas>
-                                <!-- Offscreen 28x28 processing canvas -->
                                 <canvas id="procCanvas" width="28" height="28" class="hidden"></canvas>
                             </div>
 
@@ -297,13 +293,10 @@
                             </div>
                         </div>
 
-                        <!-- Probability Bar Chart -->
                         <div>
                             <span class="text-[10px] text-gray-400 block font-mono mb-1">PROBABILITAS OUTPUT LAYER
                                 (0-9)</span>
-                            <div id="probBarsContainer" class="space-y-1">
-                                <!-- Javascript will render 10 output bars dynamically -->
-                            </div>
+                            <div id="probBarsContainer" class="space-y-1"></div>
                         </div>
                     </div>
 
@@ -387,9 +380,7 @@
                                     </script>
                                 </tr>
                             </thead>
-                            <tbody id="cmTbody">
-                                <!-- Rendered dynamically -->
-                            </tbody>
+                            <tbody id="cmTbody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -406,7 +397,6 @@
                             <span class="text-xs font-mono text-emerald-400" id="badgeDiagnosis">Optimal</span>
                         </div>
 
-                        <!-- Experiment Stats Summary Grid -->
                         <div class="grid grid-cols-3 gap-2 mb-4 text-center">
                             <div class="bg-brand-dark p-2 rounded border border-gray-800">
                                 <span class="text-[10px] text-gray-400 block font-mono">TRAIN ACC / MSE</span>
@@ -425,7 +415,6 @@
                             </div>
                         </div>
 
-                        <!-- Detailed Analysis Text Box -->
                         <div id="boxDiagnosisDetails"
                             class="bg-brand-dark/80 p-3 rounded-lg border border-gray-800 text-xs text-gray-300 leading-relaxed space-y-2 font-mono">
                             <p>Belum ada pelatihan dilakukan. Silakan jalankan tombol <strong
@@ -434,11 +423,9 @@
                         </div>
                     </div>
 
-                    <!-- Per-Digit Accuracy Table -->
                     <div>
                         <h3 class="text-xs font-bold text-gray-300 mb-2 font-mono">AKURASI PER-ANGKA (DATA UJI)</h3>
                         <div class="grid grid-cols-5 gap-1 text-center font-mono text-[11px]" id="gridPerDigitAcc">
-                            <!-- Rendered dynamically -->
                         </div>
                     </div>
                 </div>
@@ -464,10 +451,7 @@
                     </button>
                 </div>
 
-                <!-- 2x10 Sample Display Grid -->
-                <div id="datasetGalleryGrid" class="grid grid-cols-2 sm:grid-cols-5 md:grid-cols-10 gap-3">
-                    <!-- Rendered dynamically: 2 images per digit 0-9 -->
-                </div>
+                <div id="datasetGalleryGrid" class="grid grid-cols-2 sm:grid-cols-5 md:grid-cols-10 gap-3"></div>
             </div>
         </div>
 
@@ -477,7 +461,6 @@
     <footer class="bg-brand-card border-t border-brand-border p-3 space-y-2">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
 
-            <!-- STATUS BAR & PROGRESS BAR -->
             <div class="flex-1 space-y-1">
                 <div class="flex justify-between items-center text-xs font-mono">
                     <span id="txtStatusLabel" class="text-gray-300">Status: Siap (Standby)</span>
@@ -490,7 +473,6 @@
                 </div>
             </div>
 
-            <!-- TERMINAL LOG DISPLAY -->
             <div class="w-full md:w-2/3 bg-brand-termBg rounded-lg p-2 border border-gray-800 font-mono text-[11px] text-brand-termGreen h-20 overflow-y-auto relative shadow-inner"
                 id="terminalLog">
                 <div>[SYSTEM] BPNN Studio Pro Initialized (784-16-16-10).</div>
@@ -499,7 +481,6 @@
 
         </div>
 
-        <!-- BRAND FOOTER CREDIT -->
         <div
             class="max-w-7xl mx-auto border-t border-gray-800/60 pt-2 flex flex-col sm:flex-row justify-between items-center text-[10px] text-gray-500 font-mono">
             <div class="flex items-center space-x-2">
@@ -521,16 +502,14 @@
         let isTraining = false;
         let stopRequested = false;
 
-        // UI Chart Instances
         let chartMSEInstance = null;
         let chartAccInstance = null;
 
-        // Drawing state
-        let drawMode = 'draw'; // 'draw' or 'erase'
+        let drawMode = 'draw';
         let isDrawing = false;
         let lastX = 0, lastY = 0;
+        let midX = 0, midY = 0;
 
-        // Log function
         function logMsg(msg) {
             const term = document.getElementById('terminalLog');
             const item = document.createElement('div');
@@ -539,11 +518,11 @@
             term.scrollTop = term.scrollHeight;
         }
 
-        // Sigmoid & Derivative (dengan Flat-Spot Elimination + 0.01 seperti Python)
         function sigmoid(x) {
             const c = x < -30 ? -30 : (x > 30 ? 30 : x);
             return 1 / (1 + Math.exp(-c));
         }
+
         function dSigmoid(y) {
             return y * (1 - y) + 0.01;
         }
@@ -557,11 +536,9 @@
                 this.nH1 = nH1;
                 this.nH2 = nH2;
                 this.nOut = nOut;
-
                 this.initWeights();
             }
 
-            // Nguyen-Widrow Weight Initialization for hidden layers
             initWeights() {
                 this.W1 = [];
                 this.dW1_prev = [];
@@ -569,9 +546,7 @@
                 for (let i = 0; i < this.nIn; i++) {
                     this.W1[i] = new Float64Array(this.nH1);
                     this.dW1_prev[i] = new Float64Array(this.nH1);
-                    for (let j = 0; j < this.nH1; j++) {
-                        this.W1[i][j] = (Math.random() - 0.5);
-                    }
+                    for (let j = 0; j < this.nH1; j++) this.W1[i][j] = (Math.random() - 0.5);
                 }
                 for (let j = 0; j < this.nH1; j++) {
                     let norm = 0;
@@ -590,9 +565,7 @@
                 for (let i = 0; i < this.nH1; i++) {
                     this.W2[i] = new Float64Array(this.nH2);
                     this.dW2_prev[i] = new Float64Array(this.nH2);
-                    for (let j = 0; j < this.nH2; j++) {
-                        this.W2[i][j] = (Math.random() - 0.5);
-                    }
+                    for (let j = 0; j < this.nH2; j++) this.W2[i][j] = (Math.random() - 0.5);
                 }
                 for (let j = 0; j < this.nH2; j++) {
                     let norm = 0;
@@ -610,9 +583,7 @@
                 for (let i = 0; i < this.nH2; i++) {
                     this.W3[i] = new Float64Array(this.nOut);
                     this.dW3_prev[i] = new Float64Array(this.nOut);
-                    for (let j = 0; j < this.nOut; j++) {
-                        this.W3[i][j] = (Math.random() - 0.5);
-                    }
+                    for (let j = 0; j < this.nOut; j++) this.W3[i][j] = (Math.random() - 0.5);
                 }
 
                 this.b3 = new Float64Array(this.nOut);
@@ -620,7 +591,6 @@
                 for (let j = 0; j < this.nOut; j++) this.b3[j] = (Math.random() - 0.5);
             }
 
-            // Forward Pass
             forward(x) {
                 this.a1 = new Float64Array(this.nH1);
                 for (let j = 0; j < this.nH1; j++) {
@@ -634,25 +604,20 @@
                 this.a2 = new Float64Array(this.nH2);
                 for (let j = 0; j < this.nH2; j++) {
                     let sum = this.b2[j];
-                    for (let i = 0; i < this.nH1; i++) {
-                        sum += this.a1[i] * this.W2[i][j];
-                    }
+                    for (let i = 0; i < this.nH1; i++) sum += this.a1[i] * this.W2[i][j];
                     this.a2[j] = sigmoid(sum);
                 }
 
                 this.y = new Float64Array(this.nOut);
                 for (let j = 0; j < this.nOut; j++) {
                     let sum = this.b3[j];
-                    for (let i = 0; i < this.nH2; i++) {
-                        sum += this.a2[i] * this.W3[i][j];
-                    }
+                    for (let i = 0; i < this.nH2; i++) sum += this.a2[i] * this.W3[i][j];
                     this.y[j] = sigmoid(sum);
                 }
 
                 return this.y;
             }
 
-            // Fast Mini-Batch Epoch (batch_size = 32, tanpa weight_decay agar menembus MSE 0.000001)
             trainEpochBatch(dataSplit, alpha = 0.8, momentum = 0.85, batchSize = 32) {
                 const n = dataSplit.length;
                 const indices = new Int32Array(n);
@@ -675,6 +640,9 @@
                 const delta2 = new Float64Array(this.nH2);
                 const delta1 = new Float64Array(this.nH1);
 
+                let totalMSE = 0;
+                let correct = 0;
+
                 for (let start = 0; start < n; start += batchSize) {
                     const end = Math.min(start + batchSize, n);
                     const bs = end - start;
@@ -693,16 +661,20 @@
 
                         this.forward(x);
 
+                        let sampleMSE = 0, maxIdx = 0, maxVal = this.y[0];
                         for (let k = 0; k < this.nOut; k++) {
-                            delta3[k] = (target[k] - this.y[k]) * dSigmoid(this.y[k]);
+                            const err = target[k] - this.y[k];
+                            sampleMSE += err * err;
+                            if (this.y[k] > maxVal) { maxVal = this.y[k]; maxIdx = k; }
+                            delta3[k] = err * dSigmoid(this.y[k]);
                             gb3[k] += delta3[k];
                         }
+                        totalMSE += sampleMSE / this.nOut;
+                        if (maxIdx === sample.label) correct++;
 
                         for (let j = 0; j < this.nH2; j++) {
                             let sum = 0;
-                            const w3j = this.W3[j];
-                            const gw3j = gW3[j];
-                            const a2j = this.a2[j];
+                            const w3j = this.W3[j], gw3j = gW3[j], a2j = this.a2[j];
                             for (let k = 0; k < this.nOut; k++) {
                                 sum += delta3[k] * w3j[k];
                                 gw3j[k] += a2j * delta3[k];
@@ -713,9 +685,7 @@
 
                         for (let i = 0; i < this.nH1; i++) {
                             let sum = 0;
-                            const w2i = this.W2[i];
-                            const gw2i = gW2[i];
-                            const a1i = this.a1[i];
+                            const w2i = this.W2[i], gw2i = gW2[i], a1i = this.a1[i];
                             for (let j = 0; j < this.nH2; j++) {
                                 sum += delta2[j] * w2i[j];
                                 gw2i[j] += a1i * delta2[j];
@@ -728,9 +698,7 @@
                             const xi = x[i];
                             if (xi === 0) continue;
                             const gw1i = gW1[i];
-                            for (let j = 0; j < this.nH1; j++) {
-                                gw1i[j] += xi * delta1[j];
-                            }
+                            for (let j = 0; j < this.nH1; j++) gw1i[j] += xi * delta1[j];
                         }
                     }
 
@@ -772,9 +740,10 @@
                         this.b1[j] += this.db1_prev[j];
                     }
                 }
+
+                return { mse: totalMSE / (n || 1), accuracy: (correct / (n || 1)) * 100 };
             }
 
-            // Evaluate dataset split -> returns { mse, accuracy, predictions }
             evaluate(dataSplit) {
                 let totalMSE = 0;
                 let correct = 0;
@@ -924,63 +893,68 @@
         }
 
         /* ==========================================================================
-           4. INTERACTIVE DRAW CANVAS LOGIC
+           4. INTERACTIVE DRAW CANVAS LOGIC (SMOOTH QUADRATIC BEZIER)
            ========================================================================== */
         const drawCanvas = document.getElementById('drawCanvas');
         const drawCtx = drawCanvas.getContext('2d');
 
         function initDrawCanvas() {
             drawCtx.fillStyle = '#000000';
-            drawCtx.fillRect(0, 0, 280, 280);
+            drawCtx.fillRect(0, 0, drawCanvas.width, drawCanvas.height);
 
             const getPos = (e) => {
                 const rect = drawCanvas.getBoundingClientRect();
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
                 return {
-                    x: clientX - rect.left,
-                    y: clientY - rect.top
+                    x: (e.clientX - rect.left) * (drawCanvas.width / rect.width),
+                    y: (e.clientY - rect.top) * (drawCanvas.height / rect.height)
                 };
             };
 
-            const startDraw = (e) => {
+            drawCanvas.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                drawCanvas.setPointerCapture(e.pointerId);
                 isDrawing = true;
                 const pos = getPos(e);
-                lastX = pos.x; lastY = pos.y;
-                drawStroke(pos.x, pos.y);
-            };
+                lastX = midX = pos.x;
+                lastY = midY = pos.y;
 
-            const moveDraw = (e) => {
+                const r = (parseInt(document.getElementById('brushSize').value) * 9) / 2;
+                drawCtx.fillStyle = drawMode === 'draw' ? '#ffffff' : '#000000';
+                drawCtx.beginPath();
+                drawCtx.arc(pos.x, pos.y, r, 0, Math.PI * 2);
+                drawCtx.fill();
+            });
+
+            drawCanvas.addEventListener('pointermove', (e) => {
                 if (!isDrawing) return;
-                const pos = getPos(e);
-                drawStroke(pos.x, pos.y, lastX, lastY);
-                lastX = pos.x; lastY = pos.y;
-                if (e.touches) e.preventDefault();
-            };
+                e.preventDefault();
+                const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+
+                drawCtx.strokeStyle = drawMode === 'draw' ? '#ffffff' : '#000000';
+                drawCtx.lineWidth = parseInt(document.getElementById('brushSize').value) * 9;
+                drawCtx.lineCap = 'round';
+                drawCtx.lineJoin = 'round';
+
+                for (const ev of events) {
+                    const pos = getPos(ev);
+                    const newMidX = (lastX + pos.x) / 2;
+                    const newMidY = (lastY + pos.y) / 2;
+
+                    drawCtx.beginPath();
+                    drawCtx.moveTo(midX, midY);
+                    drawCtx.quadraticCurveTo(lastX, lastY, newMidX, newMidY);
+                    drawCtx.stroke();
+
+                    lastX = pos.x;
+                    lastY = pos.y;
+                    midX = newMidX;
+                    midY = newMidY;
+                }
+            });
 
             const stopDraw = () => { isDrawing = false; };
-
-            drawCanvas.addEventListener('mousedown', startDraw);
-            drawCanvas.addEventListener('mousemove', moveDraw);
-            window.addEventListener('mouseup', stopDraw);
-
-            drawCanvas.addEventListener('touchstart', startDraw, { passive: false });
-            drawCanvas.addEventListener('touchmove', moveDraw, { passive: false });
-            drawCanvas.addEventListener('touchend', stopDraw);
-        }
-
-        function drawStroke(x, y, fromX = x, fromY = y) {
-            const brushSize = parseInt(document.getElementById('brushSize').value) * 10;
-            drawCtx.strokeStyle = drawMode === 'draw' ? '#ffffff' : '#000000';
-            drawCtx.fillStyle = drawMode === 'draw' ? '#ffffff' : '#000000';
-            drawCtx.lineWidth = brushSize;
-            drawCtx.lineCap = 'round';
-            drawCtx.lineJoin = 'round';
-
-            drawCtx.beginPath();
-            drawCtx.moveTo(fromX, fromY);
-            drawCtx.lineTo(x, y);
-            drawCtx.stroke();
+            drawCanvas.addEventListener('pointerup', stopDraw);
+            drawCanvas.addEventListener('pointercancel', stopDraw);
         }
 
         function setDrawMode(mode) {
@@ -995,14 +969,14 @@
 
         function clearCanvas() {
             drawCtx.fillStyle = '#000000';
-            drawCtx.fillRect(0, 0, 280, 280);
+            drawCtx.fillRect(0, 0, drawCanvas.width, drawCanvas.height);
             updateProbabilityBars(new Float64Array(10), -1, 0);
         }
 
         function getCanvasVector() {
             const autoCenter = document.getElementById('chkAutoCenter').checked;
             if (autoCenter) {
-                return autoCenterAndCrop(drawCtx, 280, 280);
+                return autoCenterAndCrop(drawCtx, drawCanvas.width, drawCanvas.height);
             } else {
                 const pCanvas = document.getElementById('procCanvas');
                 const pCtx = pCanvas.getContext('2d');
@@ -1034,7 +1008,6 @@
             document.getElementById('predDigit').textContent = maxIdx;
             document.getElementById('predConf').textContent = (maxVal * 100).toFixed(1) + '%';
             updateProbabilityBars(probs, maxIdx, maxVal);
-
             drawNNArchitecture(inputVec, bpnn.a1, bpnn.a2, probs);
         }
 
@@ -1256,24 +1229,27 @@
             chartAccInstance.update();
         }
 
-        function updateCharts(epoch, trainMSE, valMSE, targetMSE, trainAcc, valAcc) {
-            chartMSEInstance.data.labels.push(epoch);
-            chartMSEInstance.data.datasets[0].data.push(trainMSE);
-            chartMSEInstance.data.datasets[1].data.push(valMSE);
-            chartMSEInstance.data.datasets[2].data.push(targetMSE);
-            chartMSEInstance.update('none');
+        function renderFinalHistory(history, targetMSE) {
+            resetCharts();
+            const step = Math.max(1, Math.floor(history.length / 200));
+            for (let i = 0; i < history.length; i += step) {
+                const h = history[i];
+                chartMSEInstance.data.labels.push(h.ep);
+                chartMSEInstance.data.datasets[0].data.push(h.trMSE);
+                chartMSEInstance.data.datasets[1].data.push(h.vaMSE);
+                chartMSEInstance.data.datasets[2].data.push(targetMSE);
 
-            chartAccInstance.data.labels.push(epoch);
-            chartAccInstance.data.datasets[0].data.push(trainAcc);
-            chartAccInstance.data.datasets[1].data.push(valAcc);
-            chartAccInstance.update('none');
-
-            document.getElementById('txtCurrentMSE').textContent = `MSE: ${trainMSE.toFixed(7)}`;
-            document.getElementById('txtCurrentAcc').textContent = `Acc: ${trainAcc.toFixed(1)}%`;
+                chartAccInstance.data.labels.push(h.ep);
+                chartAccInstance.data.datasets[0].data.push(h.trAcc);
+                chartAccInstance.data.datasets[1].data.push(h.vaAcc);
+            }
+            chartMSEInstance.update();
+            chartAccInstance.update();
+            drawNNArchitecture();
         }
 
         /* ==========================================================================
-           7. TRAINING LOOP CONTROL (EPOCH ∞ + FAST SET POINT MSE)
+           7. TRAINING LOOP CONTROL (FAST JUMP TO SET POINT MSE)
            ========================================================================== */
         async function startTraining() {
             if (isTraining) return;
@@ -1294,60 +1270,63 @@
             document.getElementById('btnStop').classList.remove('text-gray-500', 'cursor-not-allowed');
             document.getElementById('btnStop').classList.add('bg-brand-crimson', 'text-white', 'hover:brightness-110');
 
-            document.getElementById('txtStatusLabel').textContent = 'Status: Pelatihan Berlangsung (Epoch ∞ -> Set Point MSE)...';
-            logMsg(`Memulai pelatihan BPNN (Epoch ∞): Alpha=${alpha}, Momentum=${momentum}, Target MSE=${targetMSE.toFixed(7)} (${(targetMSE * 100).toFixed(4)}%)`);
+            document.getElementById('txtStatusLabel').textContent = 'Status: Fast Training -> Langsung ke Set Point MSE...';
+            logMsg(`Fast Training (Epoch ∞) -> Target MSE <= ${targetMSE.toFixed(7)} (${(targetMSE * 100).toFixed(4)}%)`);
 
             let currentEpoch = 0;
-            let finalTrainEval = null;
+            let lastTrain = { mse: 1, accuracy: 0 };
+            const history = [];
 
             const trainChunk = () => {
                 if (stopRequested) {
-                    finishTraining(currentEpoch, 'Dihentikan manual', finalTrainEval);
+                    renderFinalHistory(history, targetMSE);
+                    finishTraining(currentEpoch, 'Dihentikan manual', lastTrain);
                     return;
                 }
 
-                // Jalankan beberapa epoch mini-batch per tick agar melesat cepat ke Set Point MSE
-                const burst = dataset.train.length > 1500 ? 2 : 5;
+                const t0 = performance.now();
                 let converged = false;
-                let valEval = null;
 
-                for (let b = 0; b < burst; b++) {
+                while (performance.now() - t0 < 50) {
                     currentEpoch++;
-                    bpnn.trainEpochBatch(dataset.train, alpha, momentum, 32);
+                    lastTrain = bpnn.trainEpochBatch(dataset.train, alpha, momentum, 32);
 
-                    finalTrainEval = bpnn.evaluate(dataset.train);
-                    valEval = bpnn.evaluate(dataset.val);
-
-                    const updatePlot = (currentEpoch === 1 || currentEpoch % 20 === 0 || finalTrainEval.mse <= targetMSE);
-                    if (updatePlot) {
-                        updateCharts(currentEpoch, finalTrainEval.mse, valEval.mse, targetMSE, finalTrainEval.accuracy, valEval.accuracy);
-                        logMsg(`Epoch ${currentEpoch} (∞) -> MSE_tr=${finalTrainEval.mse.toFixed(7)} | MSE_va=${valEval.mse.toFixed(7)} | Acc_tr=${finalTrainEval.accuracy.toFixed(1)}% | Acc_va=${valEval.accuracy.toFixed(1)}%`);
-                        drawNNArchitecture();
+                    if (currentEpoch === 1 || currentEpoch % 10 === 0 || lastTrain.mse <= targetMSE) {
+                        const valEval = bpnn.evaluate(dataset.val);
+                        history.push({
+                            ep: currentEpoch,
+                            trMSE: lastTrain.mse,
+                            vaMSE: valEval.mse,
+                            trAcc: lastTrain.accuracy,
+                            vaAcc: valEval.accuracy
+                        });
                     }
 
-                    if (finalTrainEval.mse <= targetMSE) {
+                    if (lastTrain.mse <= targetMSE) {
                         converged = true;
                         break;
                     }
                 }
 
-                // Progress bar berdenyut untuk mode Epoch ∞
-                const pulsePct = Math.min(99, Math.max(5, (1 - Math.min(1, finalTrainEval.mse / 0.1)) * 100));
+                const pulsePct = Math.min(99, Math.max(5, (1 - Math.min(1, lastTrain.mse / 0.1)) * 100));
                 document.getElementById('progressBar').style.width = `${pulsePct.toFixed(0)}%`;
-                document.getElementById('txtEpochProgress').textContent = `Epoch: ${currentEpoch} (∞) | MSE: ${finalTrainEval.mse.toFixed(7)}`;
+                document.getElementById('txtEpochProgress').textContent = `Epoch: ${currentEpoch} (∞) | MSE: ${lastTrain.mse.toFixed(7)}`;
+                document.getElementById('txtCurrentMSE').textContent = `MSE: ${lastTrain.mse.toFixed(7)}`;
+                document.getElementById('txtCurrentAcc').textContent = `Acc: ${lastTrain.accuracy.toFixed(1)}%`;
 
                 if (converged) {
                     document.getElementById('progressBar').style.width = '100%';
-                    const reason = `Target MSE <= ${targetMSE.toFixed(7)} (${(targetMSE * 100).toFixed(4)}%) tercapai`;
+                    renderFinalHistory(history, targetMSE);
+                    const reason = `Set Point MSE <= ${targetMSE.toFixed(7)} (${(targetMSE * 100).toFixed(4)}%) tercapai`;
                     logMsg(`[CONVERGED] ${reason} pada epoch ${currentEpoch}!`);
-                    finishTraining(currentEpoch, reason, finalTrainEval);
+                    finishTraining(currentEpoch, reason, lastTrain);
                     return;
                 }
 
                 setTimeout(trainChunk, 0);
             };
 
-            trainChunk();
+            setTimeout(trainChunk, 0);
         }
 
         function stopTraining() {
@@ -1425,7 +1404,7 @@
                 statusText = '⚠️ <strong>Underfitting Terdeteksi:</strong> Akurasi data latih masih rendah (< 70%). Disarankan melanjutkan pelatihan atau menyesuaikan Learning Rate (α).';
                 badgeClass = 'text-amber-400 font-bold';
                 badge.textContent = 'Underfitting';
-            } else if (accDiff > 12 || valEval.mse > trainEval.mse * 2.5 && valEval.mse > 0.02) {
+            } else if (accDiff > 12 || (valEval.mse > trainEval.mse * 2.5 && valEval.mse > 0.02)) {
                 statusText = '⚠️ <strong>Overfitting Terdeteksi:</strong> Terdapat selisih akurasi yang signifikan antara Data Latih dan Data Validasi. Model terlalu menghafal data latih.';
                 badgeClass = 'text-brand-accent font-bold';
                 badge.textContent = 'Overfitting';
