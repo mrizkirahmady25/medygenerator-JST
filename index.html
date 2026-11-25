@@ -1,932 +1,892 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medy Generator & BPNN Studio - Angka 0-9 (28×28) | JST</title>
+    <title>BPNN Studio Pro (784-16-16-10) — medycompany</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for smooth performance curves -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0e0e11',
+                            card: '#18181f',
+                            panel: '#20202a',
+                            border: '#32252a',
+                            maroon: '#8b1e24',
+                            maroonDark: '#5c1317',
+                            maroonBright: '#9b1c1c',
+                            crimson: '#ff4d4f',
+                            accent: '#ff6b6b',
+                            termBg: '#0a0a0d',
+                            termGreen: '#a3e635'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #0a0a0f;
-            color: #e0e0e0;
-            min-height: 100vh;
-        }
-
-        /* ---- HEADER ---- */
-        header {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            padding: 18px 28px;
-            border-bottom: 2px solid #8b1e24;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo h1 {
-            font-size: 1.45rem;
-            background: linear-gradient(90deg, #ff4d6d, #e94560, #53d8fb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .logo .badge {
-            background: #8b1e24;
-            color: #fff;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .author {
-            color: #8892b0;
-            font-size: 0.85rem;
-        }
-
-        /* ---- TABS ---- */
-        .tabs {
-            display: flex;
-            background: #111122;
-            border-bottom: 1px solid #222;
-            overflow-x: auto;
-        }
-
-        .tab-btn {
-            padding: 12px 22px;
-            background: none;
-            border: none;
-            color: #8892b0;
-            font-size: 0.88rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .tab-btn:hover {
-            color: #fff;
-            background: #1a1a2e;
-        }
-
-        .tab-btn.active {
-            color: #53d8fb;
-            border-bottom-color: #e94560;
-            background: #1a1a2e;
-        }
-
-        .tab-content {
-            display: none;
-            padding: 22px;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* ---- CONTROLS ---- */
-        .controls {
-            background: #111122;
-            border: 1px solid #222;
-            border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 18px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            align-items: flex-end;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .control-group label {
-            font-size: 0.74rem;
-            color: #8892b0;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .control-group input,
-        .control-group select {
-            background: #1a1a2e;
-            border: 1px solid #333;
-            color: #fff;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-size: 0.88rem;
-            width: 100px;
-        }
-
-        .control-group input:focus,
-        .control-group select:focus {
-            outline: none;
-            border-color: #e94560;
-        }
-
-        /* ---- DIGIT CHECKBOXES ---- */
-        .digit-selector {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .digit-cb {
-            display: none;
-        }
-
-        .digit-label {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: #1a1a2e;
-            border: 1px solid #333;
-            color: #8892b0;
-            font-weight: 700;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .digit-cb:checked+.digit-label {
-            background: #e94560;
-            color: #fff;
-            border-color: #e94560;
-        }
-
-        /* ---- BUTTONS ---- */
-        .btn {
-            padding: 9px 16px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.86rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn:disabled {
-            opacity: 0.45;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .btn-primary {
-            background: #e94560;
-            color: #fff;
-        }
-
-        .btn-primary:hover {
-            background: #ff6b81;
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background: #0f3460;
-            color: #fff;
-        }
-
-        .btn-secondary:hover {
-            background: #1a5276;
-        }
-
-        .btn-accent {
-            background: #2ecc71;
-            color: #0a0a0f;
-        }
-
-        .btn-accent:hover {
-            background: #27ae60;
-            color: #fff;
-        }
-
-        .btn-purple {
-            background: #8e44ad;
-            color: #fff;
-        }
-
-        .btn-purple:hover {
-            background: #9b59b6;
-        }
-
-        .btn-dark {
-            background: #242438;
-            color: #ddd;
-            border: 1px solid #383854;
-        }
-
-        .btn-dark:hover {
-            background: #32324d;
-        }
-
-        /* ---- GALLERY ---- */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
-            gap: 6px;
-        }
-
-        .gallery-item {
-            position: relative;
-            aspect-ratio: 1;
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid #222;
-            transition: transform 0.15s;
-            background: #000;
-        }
-
-        .gallery-item:hover {
-            transform: scale(1.35);
-            z-index: 10;
-            border-color: #e94560;
-        }
-
-        .gallery-item canvas {
-            width: 100%;
-            height: 100%;
-            image-rendering: pixelated;
-            display: block;
-        }
-
-        .gallery-item .digit-tag {
-            position: absolute;
-            top: 1px;
-            right: 2px;
-            font-size: 0.58rem;
-            color: #53d8fb;
-            font-weight: 700;
-            text-shadow: 0 0 3px #000;
-        }
-
-        /* ---- PREVIEW DETAIL ---- */
-        .preview-area {
-            display: flex;
-            gap: 24px;
-            flex-wrap: wrap;
-        }
-
-        .preview-big {
-            text-align: center;
-        }
-
-        .preview-big canvas {
-            border: 2px solid #333;
-            border-radius: 8px;
-            image-rendering: pixelated;
-            background: #000;
-        }
-
-        .preview-info {
-            background: #111122;
-            border: 1px solid #222;
-            border-radius: 8px;
-            padding: 14px;
-            margin-top: 10px;
-            font-family: 'Consolas', monospace;
-            font-size: 0.84rem;
-            line-height: 1.75;
-            min-width: 210px;
-            text-align: left;
-        }
-
-        .variations-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 56px);
-            gap: 6px;
-        }
-
-        .variations-grid canvas {
-            width: 56px;
-            height: 56px;
-            border: 1px solid #333;
-            border-radius: 4px;
-            image-rendering: pixelated;
-            background: #000;
-        }
-
-        /* ---- STATS ---- */
-        .stats-container {
-            display: flex;
-            gap: 18px;
-            flex-wrap: wrap;
-        }
-
-        .stat-card {
-            background: #111122;
-            border: 1px solid #222;
-            border-radius: 12px;
-            padding: 18px;
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .stat-card h3 {
-            color: #53d8fb;
-            margin-bottom: 12px;
-            font-size: 0.95rem;
-        }
-
-        .bar-chart {
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
-            height: 180px;
-        }
-
-        .bar-col {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            height: 100%;
-            justify-content: flex-end;
-        }
-
-        .bar {
-            width: 100%;
-            border-radius: 4px 4px 0 0;
-            transition: height 0.4s ease;
-            min-height: 2px;
-        }
-
-        .bar-label {
-            font-size: 0.75rem;
-            color: #8892b0;
-        }
-
-        .bar-value {
-            font-size: 0.68rem;
-            color: #fff;
-            font-weight: 700;
-        }
-
-        /* ---- BPNN STUDIO ---- */
-        .bpnn-layout {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 18px;
-        }
-
-        .panel-card {
-            background: #111122;
-            border: 1px solid #222;
-            border-radius: 12px;
-            padding: 16px;
-        }
-
-        .panel-title {
-            color: #ff6b81;
-            font-size: 0.92rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        #draw-canvas {
-            width: 280px;
-            height: 280px;
-            background: #000;
-            border: 2px solid #444;
-            border-radius: 8px;
-            cursor: crosshair;
-            image-rendering: pixelated;
-            touch-action: none;
-            display: block;
-            margin: 0 auto;
-        }
-
-        .pred-result {
-            text-align: center;
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: #fff;
-            margin: 12px 0 8px;
-        }
-
-        .prob-bars {
-            display: flex;
-            align-items: flex-end;
-            gap: 5px;
-            height: 95px;
-            padding-top: 8px;
-        }
-
-        .charts-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-bottom: 14px;
-        }
-
-        .chart-canvas {
-            width: 100%;
-            height: 220px;
-            background: #0c0c16;
-            border: 1px solid #26263a;
-            border-radius: 8px;
-            display: block;
-        }
-
-        .eval-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .cm-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.72rem;
-            text-align: center;
-            font-family: 'Consolas', monospace;
-        }
-
-        .cm-table th,
-        .cm-table td {
-            border: 1px solid #26263a;
-            padding: 4px 2px;
-        }
-
-        .cm-table th {
-            background: #1a1a2e;
-            color: #53d8fb;
-        }
-
-        .log-box {
-            background: #08080e;
-            border: 1px solid #222;
-            border-radius: 8px;
-            padding: 10px;
-            font-family: 'Consolas', monospace;
-            font-size: 0.78rem;
-            color: #a3e635;
-            height: 210px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            line-height: 1.5;
-        }
-
-        /* ---- PAGINATION & FOOTER ---- */
-        .pagination {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-        }
-
-        .page-info {
-            color: #8892b0;
-            font-size: 0.85rem;
-        }
-
-        .status-bar {
-            background: #111122;
-            border-top: 1px solid #222;
-            padding: 10px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            gap: 12px;
-        }
-
-        .status-text {
-            color: #a0aec0;
-            font-size: 0.82rem;
-        }
-
-        .progress-bar {
-            width: 240px;
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
             height: 6px;
-            background: #1a1a2e;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0e0e11;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3a2228;
             border-radius: 3px;
-            overflow: hidden;
-            flex-shrink: 0;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #e94560, #53d8fb);
-            border-radius: 3px;
-            width: 0%;
-            transition: width 0.25s;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8b1e24;
         }
 
-        .main-content {
-            padding-bottom: 58px;
+        .glow-maroon {
+            box-shadow: 0 0 15px rgba(155, 28, 28, 0.4);
         }
 
-        .download-section {
-            background: #111122;
-            border: 1px solid #222;
-            border-radius: 12px;
-            padding: 18px;
-            margin-top: 18px;
-            text-align: center;
+        .glow-crimson {
+            box-shadow: 0 0 12px rgba(255, 77, 79, 0.5);
         }
 
-        .download-section p {
-            color: #8892b0;
-            margin-bottom: 12px;
-            font-size: 0.85rem;
+        .pixelated {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
 
-        @media (max-width: 960px) {
-            .bpnn-layout {
-                grid-template-columns: 1fr;
-            }
-
-            .charts-row,
-            .eval-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            header {
-                padding: 14px 16px;
-            }
-
-            .tab-btn {
-                padding: 10px 14px;
-                font-size: 0.8rem;
-            }
-
-            .tab-content {
-                padding: 14px;
-            }
-
-            .controls {
-                padding: 14px;
-            }
-
-            .preview-area {
-                flex-direction: column;
-            }
+        canvas {
+            touch-action: none;
         }
     </style>
 </head>
 
-<body>
+<body
+    class="bg-brand-dark text-gray-100 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-crimson selection:text-white">
 
-    <!-- HEADER -->
-    <header>
-        <div class="logo">
-            <h1>🎨 Medy Generator & BPNN</h1>
-            <span class="badge">JST 784-16-16-10</span>
-        </div>
-        <div class="author">
-            Muhammad Rizki Rahmady — 03041182429009 | Tugas 13 — Pengenalan Pola Angka 0-9 (28×28)
+    <!-- HEADER CONTROL BAR -->
+    <header class="bg-brand-card border-b border-brand-border px-4 py-3 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+
+            <!-- LOGO & TITLE SECTION -->
+            <div class="flex items-center space-x-3">
+                <!-- MEDYCOMPANY LOGO -->
+                <div
+                    class="flex items-center space-x-2 bg-gradient-to-r from-brand-maroonDark/80 to-brand-panel p-2 rounded-xl border border-brand-maroon/50 shadow-md">
+                    <svg class="w-8 h-8 filter drop-shadow-md" viewBox="0 0 100 100" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="50,5 90,27.5 90,72.5 50,95 10,72.5 10,27.5" fill="#18181f" stroke="#9b1c1c"
+                            stroke-width="4" />
+                        <path d="M50 12 L82 31 L82 69 L50 88 L18 69 L18 31 Z" stroke="#ff4d4f" stroke-width="2"
+                            stroke-dasharray="4 2" />
+                        <!-- Monogram M -->
+                        <path d="M30 68 V32 L50 52 L70 32 V68" stroke="#ffffff" stroke-width="6" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M30 68 V32 L50 52 L70 32 V68" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <!-- Neural nodes -->
+                        <circle cx="30" cy="32" r="3.5" fill="#ff4d4f" />
+                        <circle cx="50" cy="52" r="4" fill="#ffffff" />
+                        <circle cx="70" cy="32" r="3.5" fill="#ff4d4f" />
+                        <circle cx="30" cy="68" r="3.5" fill="#9b1c1c" />
+                        <circle cx="70" cy="68" r="3.5" fill="#9b1c1c" />
+                    </svg>
+                    <div class="flex flex-col">
+                        <span class="font-black tracking-wider text-sm leading-none text-white">
+                            MEDY<span class="text-brand-accent">COMPANY</span>
+                        </span>
+                        <span class="text-[9px] tracking-widest text-gray-400 font-mono mt-0.5">NEURAL LABS</span>
+                    </div>
+                </div>
+
+                <div class="h-8 w-px bg-brand-maroon/40 hidden sm:block"></div>
+
+                <!-- APP TITLE -->
+                <div class="hidden md:flex flex-col">
+                    <h1 class="font-bold text-base text-gray-100 flex items-center gap-2">
+                        BPNN Studio Pro <span
+                            class="text-xs font-mono px-2 py-0.5 rounded bg-brand-maroon/40 text-brand-accent border border-brand-maroon/60">784-16-16-10</span>
+                    </h1>
+                    <p class="text-xs text-gray-400">Muhammad Rizki Rahmady (03041182429009)</p>
+                </div>
+            </div>
+
+            <!-- HYPERPARAMETER INPUTS -->
+            <div
+                class="flex flex-wrap items-center gap-2 bg-brand-dark/60 p-1.5 rounded-lg border border-brand-border text-xs">
+                <div class="flex items-center space-x-1 px-1">
+                    <label class="text-gray-400 font-mono">α (LR):</label>
+                    <input type="number" id="inputAlpha" value="0.8" step="0.05" min="0.01" max="5"
+                        class="w-14 bg-brand-card border border-gray-700 rounded px-1.5 py-0.5 text-brand-accent focus:outline-none focus:border-brand-accent text-center font-mono">
+                </div>
+                <div class="flex items-center space-x-1 px-1">
+                    <label class="text-gray-400 font-mono">μ (Mom):</label>
+                    <input type="number" id="inputMomentum" value="0.85" step="0.05" min="0" max="0.99"
+                        class="w-14 bg-brand-card border border-gray-700 rounded px-1.5 py-0.5 text-brand-accent focus:outline-none focus:border-brand-accent text-center font-mono">
+                </div>
+                <div class="flex items-center space-x-1 px-1">
+                    <label class="text-gray-400 font-mono">Target MSE (0.0001%):</label>
+                    <input type="number" id="inputTargetMSE" value="0.000001" step="0.000001" min="0.0000001" max="0.1"
+                        class="w-24 bg-brand-card border border-gray-700 rounded px-1.5 py-0.5 text-brand-accent focus:outline-none focus:border-brand-accent text-center font-mono">
+                </div>
+                <div class="flex items-center space-x-1 px-1">
+                    <label class="text-gray-400 font-mono">Pola/Angka (≥50):</label>
+                    <input type="number" id="inputSamplesPerDigit" value="100" step="10" min="50" max="1000"
+                        class="w-16 bg-brand-card border border-gray-700 rounded px-1.5 py-0.5 text-brand-accent focus:outline-none focus:border-brand-accent text-center font-mono">
+                </div>
+                <div class="flex items-center px-1.5">
+                    <span class="font-mono font-bold text-brand-crimson">Epoch: ∞</span>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="flex items-center space-x-1.5">
+                <button id="btnTrain" onclick="startTraining()"
+                    class="px-3 py-1.5 bg-gradient-to-r from-brand-maroon to-brand-crimson hover:from-brand-maroonBright hover:to-red-500 text-white font-semibold rounded-md shadow flex items-center gap-1 text-xs transition">
+                    ▶ <span>Latih</span>
+                </button>
+                <button id="btnStop" onclick="stopTraining()" disabled
+                    class="px-3 py-1.5 bg-gray-800 text-gray-500 font-semibold rounded-md text-xs cursor-not-allowed flex items-center gap-1 transition">
+                    ■ <span>Stop</span>
+                </button>
+                <button onclick="regenerateDataset()"
+                    class="px-2.5 py-1.5 bg-brand-panel hover:bg-gray-700 text-gray-200 rounded-md text-xs border border-gray-700 transition"
+                    title="Regenerasi Data">
+                    ↻
+                </button>
+                <button onclick="saveWeights()"
+                    class="px-2.5 py-1.5 bg-brand-panel hover:bg-gray-700 text-gray-200 rounded-md text-xs border border-gray-700 transition"
+                    title="Simpan Bobot">
+                    💾
+                </button>
+                <label
+                    class="px-2.5 py-1.5 bg-brand-panel hover:bg-gray-700 text-gray-200 rounded-md text-xs border border-gray-700 cursor-pointer transition"
+                    title="Muat Bobot">
+                    📂 <input type="file" id="fileWeights" onchange="loadWeights(event)" accept=".json" class="hidden">
+                </label>
+                <button onclick="exportChartsPNG()"
+                    class="px-2.5 py-1.5 bg-brand-panel hover:bg-gray-700 text-gray-200 rounded-md text-xs border border-gray-700 transition"
+                    title="Ekspor Grafik PNG">
+                    📊
+                </button>
+            </div>
+
         </div>
     </header>
 
-    <!-- TABS -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('gallery')">📷 Galeri Dataset</button>
-        <button class="tab-btn" onclick="switchTab('detail')">🔍 Preview Detail</button>
-        <button class="tab-btn" onclick="switchTab('stats')">📊 Statistik</button>
-        <button class="tab-btn" onclick="switchTab('bpnn')">🧠 BPNN Studio (Latih & Prediksi)</button>
-    </div>
-
-    <div class="main-content">
-
-        <!-- TAB 1: GALLERY -->
-        <div id="tab-gallery" class="tab-content active">
-            <div class="controls">
-                <div class="control-group">
-                    <label>Pola/Angka (≥50)</label>
-                    <input type="number" id="inp-jumlah" value="100" min="50" max="500">
-                </div>
-                <div class="control-group">
-                    <label>Noise (0-1)</label>
-                    <input type="number" id="inp-noise" value="0" min="0" max="1" step="0.05">
-                </div>
-                <div class="control-group">
-                    <label>Seed</label>
-                    <input type="number" id="inp-seed" value="42" min="0">
-                </div>
-                <div class="control-group" style="justify-content:center; padding-bottom:6px;">
-                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
-                        <input type="checkbox" id="inp-blur" style="accent-color:#e94560;width:15px;height:15px;">
-                        Blur
-                    </label>
-                </div>
-                <div class="control-group">
-                    <label>Angka</label>
-                    <div class="digit-selector">
-                        <input class="digit-cb" type="checkbox" id="d0" checked><label class="digit-label"
-                            for="d0">0</label>
-                        <input class="digit-cb" type="checkbox" id="d1" checked><label class="digit-label"
-                            for="d1">1</label>
-                        <input class="digit-cb" type="checkbox" id="d2" checked><label class="digit-label"
-                            for="d2">2</label>
-                        <input class="digit-cb" type="checkbox" id="d3" checked><label class="digit-label"
-                            for="d3">3</label>
-                        <input class="digit-cb" type="checkbox" id="d4" checked><label class="digit-label"
-                            for="d4">4</label>
-                        <input class="digit-cb" type="checkbox" id="d5" checked><label class="digit-label"
-                            for="d5">5</label>
-                        <input class="digit-cb" type="checkbox" id="d6" checked><label class="digit-label"
-                            for="d6">6</label>
-                        <input class="digit-cb" type="checkbox" id="d7" checked><label class="digit-label"
-                            for="d7">7</label>
-                        <input class="digit-cb" type="checkbox" id="d8" checked><label class="digit-label"
-                            for="d8">8</label>
-                        <input class="digit-cb" type="checkbox" id="d9" checked><label class="digit-label"
-                            for="d9">9</label>
-                    </div>
-                </div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    <button class="btn btn-primary" onclick="generateAll()">🔄 Generate</button>
-                    <button class="btn btn-dark" onclick="presetGenerate(100)">1.000 Pola</button>
-                    <button class="btn btn-dark" onclick="presetGenerate(400)">4.000 Pola</button>
-                    <button class="btn btn-accent" onclick="downloadZip()">💾 ZIP</button>
-                    <button class="btn btn-purple" onclick="downloadCsv()">📄 CSV</button>
-                </div>
-            </div>
-
-            <div class="pagination">
-                <button class="btn btn-secondary" onclick="prevPage()">◀ Prev</button>
-                <span class="page-info" id="page-info">Halaman 1 / 1</span>
-                <button class="btn btn-secondary" onclick="nextPage()">Next ▶</button>
-                <select id="filter-gallery" onchange="currentPage=0; updateGallery();"
-                    style="background:#1a1a2e;border:1px solid #333;color:#fff;padding:7px 10px;border-radius:8px;font-size:0.84rem;">
-                    <option value="all">Filter: Semua Angka</option>
-                    <option value="0">Angka 0</option>
-                    <option value="1">Angka 1</option>
-                    <option value="2">Angka 2</option>
-                    <option value="3">Angka 3</option>
-                    <option value="4">Angka 4</option>
-                    <option value="5">Angka 5</option>
-                    <option value="6">Angka 6</option>
-                    <option value="7">Angka 7</option>
-                    <option value="8">Angka 8</option>
-                    <option value="9">Angka 9</option>
-                </select>
-                <span class="page-info" id="total-info" style="margin-left:auto;">Total: 0 gambar</span>
-            </div>
-
-            <div class="gallery-grid" id="gallery-grid"></div>
-
-            <div class="download-section" id="download-section" style="display:none;">
-                <p>💡 Dataset siap diunduh sebagai <strong>ZIP (PNG 28×28 per folder angka)</strong> atau <strong>CSV
-                        (784 fitur biner)</strong>, atau langsung latih di tab <strong>BPNN Studio</strong>.</p>
-                <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-                    <button class="btn btn-accent" onclick="downloadZip()">💾 Download ZIP (PNG)</button>
-                    <button class="btn btn-purple" onclick="downloadCsv()">📄 Download CSV (JST)</button>
-                    <button class="btn btn-primary" onclick="switchTab('bpnn')">🧠 Latih di BPNN Studio →</button>
-                </div>
-            </div>
+    <!-- NAVIGATION TABS -->
+    <nav class="bg-brand-card/80 border-b border-brand-border px-4">
+        <div class="max-w-7xl mx-auto flex space-x-2">
+            <button onclick="switchTab('tab1')" id="tabBtn1"
+                class="px-4 py-2.5 text-xs font-semibold border-b-2 border-brand-crimson text-brand-accent transition flex items-center gap-2">
+                <span>1. Studio Training & Prediksi</span>
+            </button>
+            <button onclick="switchTab('tab2')" id="tabBtn2"
+                class="px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-200 transition flex items-center gap-2">
+                <span>2. Evaluasi & Analisis Overfitting</span>
+            </button>
+            <button onclick="switchTab('tab3')" id="tabBtn3"
+                class="px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-200 transition flex items-center gap-2">
+                <span>3. Galeri Dataset (28x28)</span>
+            </button>
         </div>
+    </nav>
 
-        <!-- TAB 2: DETAIL -->
-        <div id="tab-detail" class="tab-content">
-            <div class="controls">
-                <div class="control-group">
-                    <label>Angka</label>
-                    <select id="inp-single-digit">
-                        <option>0</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                        <option>9</option>
-                    </select>
-                </div>
-                <div class="control-group">
-                    <label>Skala</label>
-                    <input type="text" id="inp-skala" value="auto" style="width:75px;">
-                </div>
-                <div class="control-group">
-                    <label>Rotasi (°)</label>
-                    <input type="text" id="inp-rotasi" value="auto" style="width:75px;">
-                </div>
-                <div style="display:flex;gap:8px;align-items:flex-end;">
-                    <button class="btn btn-primary" onclick="generateSingle()">🔄 Generate 1</button>
-                    <button class="btn btn-purple" onclick="generateVariations()">🎲 25 Variasi</button>
-                </div>
-            </div>
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto w-full flex-grow p-4 space-y-4">
 
-            <div class="preview-area">
-                <div class="preview-big">
-                    <canvas id="big-preview" width="168" height="168"></canvas>
-                    <div class="preview-info" id="preview-info">
-                        Digit&nbsp;&nbsp;&nbsp;&nbsp;: -<br>
-                        Ukuran&nbsp;&nbsp;&nbsp;: 28 × 28<br>
-                        Piksel 1 : -<br>
-                        Piksel 0 : -<br>
-                        Densitas : -
-                    </div>
-                </div>
-                <div>
-                    <h3 style="color:#53d8fb;margin-bottom:10px;font-size:0.9rem;">25 Variasi Random</h3>
-                    <div class="variations-grid" id="variations-grid"></div>
-                </div>
-            </div>
-        </div>
+        <!-- TAB 1: STUDIO TRAINING & PREDIKSI -->
+        <div id="tab1" class="space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
-        <!-- TAB 3: STATS -->
-        <div id="tab-stats" class="tab-content">
-            <div class="stats-container">
-                <div class="stat-card">
-                    <h3>📊 Distribusi Jumlah Citra per Angka</h3>
-                    <div class="bar-chart" id="chart-distribution"></div>
-                </div>
-                <div class="stat-card">
-                    <h3>📈 Densitas Piksel Rata-rata per Angka</h3>
-                    <div class="bar-chart" id="chart-density"></div>
-                </div>
-            </div>
-            <div class="stat-card" style="margin-top:16px;">
-                <h3>📋 Ringkasan Dataset</h3>
-                <p id="stats-summary" style="color:#8892b0;line-height:1.8;">Klik 'Generate' untuk melihat statistik.
-                </p>
-            </div>
-        </div>
-
-        <!-- TAB 4: BPNN STUDIO -->
-        <div id="tab-bpnn" class="tab-content">
-            <div class="controls">
-                <div class="control-group">
-                    <label>Alpha (α)</label>
-                    <input type="number" id="bpnn-alpha" value="0.8" step="0.05" min="0.01" style="width:80px;">
-                </div>
-                <div class="control-group">
-                    <label>Momentum (μ)</label>
-                    <input type="number" id="bpnn-momentum" value="0.85" step="0.05" min="0" max="0.99"
-                        style="width:80px;">
-                </div>
-                <div class="control-group">
-                    <label>Set Point MSE (0.0001%)</label>
-                    <input type="text" id="bpnn-target-mse" value="0.000001" style="width:110px;">
-                </div>
-                <div class="control-group" style="justify-content:center; padding-bottom:8px;">
-                    <span style="color:#ff6b81;font-weight:700;font-size:0.88rem;">Epoch: ∞ (Fast)</span>
-                </div>
-                <div style="display:flex;gap:8px;align-items:flex-end;">
-                    <button class="btn btn-primary" id="btn-train" onclick="startTraining()">▶ Latih BPNN</button>
-                    <button class="btn btn-dark" id="btn-stop" onclick="stopTraining()" disabled>■ Stop</button>
-                </div>
-            </div>
-
-            <div class="bpnn-layout">
-                <!-- KANVAS INPUT & PREDIKSI -->
-                <div class="panel-card">
-                    <div class="panel-title">Kanvas Prediksi (28×28)</div>
-                    <canvas id="draw-canvas" width="28" height="28"></canvas>
-
-                    <div style="display:flex;gap:6px;margin-top:10px;">
-                        <button class="btn btn-primary" style="flex:1;justify-content:center;"
-                            onclick="predictCanvas()">Prediksi</button>
-                        <button class="btn btn-dark" style="flex:1;justify-content:center;"
-                            onclick="clearDrawCanvas()">Bersihkan</button>
-                    </div>
-                    <div style="display:flex;gap:6px;margin-top:6px;">
-                        <button class="btn btn-secondary" style="flex:1;justify-content:center;"
-                            onclick="testRandomSample()">🎲 Uji Sampel Acak</button>
-                    </div>
-                    <div
-                        style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:0.82rem;color:#ccc;">
-                        <label>Kuas:
-                            <select id="brush-size"
-                                style="background:#1a1a2e;color:#fff;border:1px solid #333;border-radius:5px;padding:2px 6px;">
-                                <option value="1">1</option>
-                                <option value="2" selected>2</option>
-                                <option value="3">3</option>
-                            </select>
-                        </label>
-                        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
-                            <input type="checkbox" id="chk-autocenter" checked style="accent-color:#e94560;">
-                            Auto-Center
-                        </label>
-                    </div>
-
-                    <div class="pred-result" id="pred-result">Hasil: -</div>
-                    <div class="prob-bars" id="prob-bars"></div>
-                </div>
-
-                <!-- GRAFIK & EVALUASI -->
-                <div>
-                    <div class="charts-row">
-                        <div class="panel-card">
-                            <div class="panel-title">MSE vs Epoch</div>
-                            <canvas id="chart-mse" class="chart-canvas" width="460" height="220"></canvas>
+                <!-- LEFT PANEL: DRAWING & PREDICTION -->
+                <div
+                    class="lg:col-span-5 bg-brand-card p-4 rounded-xl border border-brand-border shadow-md space-y-4 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h2 class="font-bold text-sm text-gray-200 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-brand-crimson"></span> Kanvas Digigit 28x28
+                                (Interaktif)
+                            </h2>
+                            <span class="text-xs font-mono text-gray-400">Standard Grid 784 Dynamic</span>
                         </div>
-                        <div class="panel-card">
-                            <div class="panel-title">Akurasi vs Epoch (%)</div>
-                            <canvas id="chart-acc" class="chart-canvas" width="460" height="220"></canvas>
-                        </div>
-                    </div>
 
-                    <div class="eval-row">
-                        <div class="panel-card">
-                            <div class="panel-title">Confusion Matrix (Data Uji 10%)</div>
-                            <div id="cm-container" style="overflow-x:auto;color:#8892b0;font-size:0.82rem;">
-                                Klik '▶ Latih BPNN' untuk melihat Confusion Matrix.
+                        <div class="flex flex-col items-center space-y-3">
+                            <!-- Interactive Draw Canvas -->
+                            <div
+                                class="relative bg-black rounded-lg p-1.5 border-2 border-brand-maroon/60 shadow-inner group">
+                                <canvas id="drawCanvas" width="280" height="280"
+                                    class="rounded bg-black cursor-crosshair block touch-none"></canvas>
+                                <!-- Offscreen 28x28 processing canvas -->
+                                <canvas id="procCanvas" width="28" height="28" class="hidden"></canvas>
+                            </div>
+
+                            <!-- Canvas Controls -->
+                            <div class="w-full flex flex-wrap items-center justify-between gap-2 text-xs">
+                                <div
+                                    class="flex items-center space-x-1 bg-brand-dark p-1 rounded border border-gray-800">
+                                    <button id="btnModeDraw" onclick="setDrawMode('draw')"
+                                        class="px-2 py-1 bg-brand-maroon text-white rounded font-medium">Gambar</button>
+                                    <button id="btnModeErase" onclick="setDrawMode('erase')"
+                                        class="px-2 py-1 bg-gray-800 text-gray-300 hover:text-white rounded">Hapus</button>
+                                    <button onclick="clearCanvas()"
+                                        class="px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded">Bersihkan</button>
+                                </div>
+
+                                <div class="flex items-center space-x-2">
+                                    <label class="text-gray-400 text-[11px]">Kuas:</label>
+                                    <select id="brushSize"
+                                        class="bg-brand-dark border border-gray-700 rounded px-1.5 py-1 text-xs text-gray-200">
+                                        <option value="1">1px</option>
+                                        <option value="2" selected>2px</option>
+                                        <option value="3">3px</option>
+                                    </select>
+                                </div>
+
+                                <div class="flex items-center space-x-1">
+                                    <input type="checkbox" id="chkAutoCenter" checked
+                                        class="rounded accent-brand-crimson">
+                                    <label for="chkAutoCenter" class="text-gray-300 text-[11px]">Auto-Center</label>
+                                </div>
+                            </div>
+
+                            <!-- Extra Action Buttons -->
+                            <div class="w-full flex gap-2">
+                                <button onclick="predictCanvas()"
+                                    class="flex-1 py-2 bg-gradient-to-r from-brand-maroon to-brand-crimson hover:brightness-110 text-white font-bold rounded-lg shadow text-xs transition">
+                                    🔍 Prediksi Citra Kanvas
+                                </button>
+                                <button onclick="loadRandomTestSample()"
+                                    class="px-3 py-2 bg-brand-panel hover:bg-gray-700 border border-gray-700 text-gray-200 rounded-lg text-xs transition">
+                                    🎲 Uji Sampel Acak
+                                </button>
+                                <label
+                                    class="px-3 py-2 bg-brand-panel hover:bg-gray-700 border border-gray-700 text-gray-200 rounded-lg text-xs cursor-pointer transition text-center"
+                                    title="Unggah Citra">
+                                    🖼️ <input type="file" id="fileImageInput" onchange="loadUserImage(event)"
+                                        accept="image/*" class="hidden">
+                                </label>
                             </div>
                         </div>
-                        <div class="panel-card">
-                            <div class="panel-title">Log Training & Diagnosis</div>
-                            <div class="log-box" id="bpnn-log">Siap melatih BPNN (784-16-16-10) dengan dataset yang
-                                aktif.</div>
+                    </div>
+
+                    <!-- PREDICTION RESULT & PROBABILITY CHART -->
+                    <div class="bg-brand-dark/70 p-3 rounded-lg border border-brand-border space-y-3">
+                        <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                            <div>
+                                <span class="text-[11px] text-gray-400 block font-mono">HASIL PREDIKSI</span>
+                                <span id="predDigit" class="text-3xl font-black text-brand-accent leading-none">-</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[11px] text-gray-400 block font-mono">TINGKAT KEPERCAYAAN</span>
+                                <span id="predConf" class="text-lg font-bold text-gray-200 font-mono">0.0%</span>
+                            </div>
+                        </div>
+
+                        <!-- Probability Bar Chart -->
+                        <div>
+                            <span class="text-[10px] text-gray-400 block font-mono mb-1">PROBABILITAS OUTPUT LAYER
+                                (0-9)</span>
+                            <div id="probBarsContainer" class="space-y-1">
+                                <!-- Javascript will render 10 output bars dynamically -->
+                            </div>
                         </div>
                     </div>
+
+                </div>
+
+                <!-- RIGHT PANEL: NN ARCHITECTURE & REALTIME CHARTS -->
+                <div class="lg:col-span-7 space-y-4">
+
+                    <!-- NN ARCHITECTURE CANVAS -->
+                    <div class="bg-brand-card p-4 rounded-xl border border-brand-border shadow-md">
+                        <div class="flex justify-between items-center mb-2">
+                            <h2 class="font-bold text-sm text-gray-200 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-brand-maroonBright"></span> Visualisasi Arsitektur
+                                BPNN (784-16-16-10)
+                            </h2>
+                            <span class="text-[11px] font-mono text-gray-400">Nguyen-Widrow Init + Fast Mini-Batch
+                                Momentum</span>
+                        </div>
+                        <div
+                            class="relative w-full h-44 bg-brand-dark/90 rounded-lg border border-gray-800 overflow-hidden">
+                            <canvas id="nnCanvas" class="w-full h-full block"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- LIVE DUAL CHARTS -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        <!-- MSE CHART -->
+                        <div
+                            class="bg-brand-card p-3.5 rounded-xl border border-brand-border shadow-md flex flex-col justify-between">
+                            <div class="flex justify-between items-center mb-1">
+                                <h3 class="text-xs font-bold text-gray-200 font-mono">Grafik MSE vs Epoch</h3>
+                                <span id="txtCurrentMSE" class="text-[11px] font-mono text-brand-accent">MSE:
+                                    0.0000000</span>
+                            </div>
+                            <div class="h-44 w-full">
+                                <canvas id="chartMSE"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- ACCURACY CHART -->
+                        <div
+                            class="bg-brand-card p-3.5 rounded-xl border border-brand-border shadow-md flex flex-col justify-between">
+                            <div class="flex justify-between items-center mb-1">
+                                <h3 class="text-xs font-bold text-gray-200 font-mono">Grafik Akurasi vs Epoch (%)</h3>
+                                <span id="txtCurrentAcc" class="text-[11px] font-mono font-bold text-emerald-400">Acc:
+                                    0.0%</span>
+                            </div>
+                            <div class="h-44 w-full">
+                                <canvas id="chartAcc"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 2: EVALUASI & ANALISIS OVERFITTING -->
+        <div id="tab2" class="hidden space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+                <!-- CONFUSION MATRIX -->
+                <div class="lg:col-span-6 bg-brand-card p-4 rounded-xl border border-brand-border shadow-md">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="font-bold text-sm text-gray-200 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-brand-crimson"></span> Matriks Konfusi (Confusion
+                            Matrix 10x10)
+                        </h2>
+                        <span class="text-xs font-mono text-gray-400">Data Pengujian (10% Split)</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center border-collapse text-xs font-mono">
+                            <thead>
+                                <tr class="text-gray-400 border-b border-gray-800">
+                                    <th class="p-1 text-[10px]">Pred \ Akt</th>
+                                    <script>
+                                        for (let i = 0; i < 10; i++) document.write(`<th class="p-1 text-[10px]">${i}</th>`);
+                                    </script>
+                                </tr>
+                            </thead>
+                            <tbody id="cmTbody">
+                                <!-- Rendered dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- DIAGNOSIS & OVERFITTING REPORT -->
+                <div
+                    class="lg:col-span-6 bg-brand-card p-4 rounded-xl border border-brand-border shadow-md flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h2 class="font-bold text-sm text-gray-200 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-brand-accent"></span> Diagnosis Otomatis & Analisis
+                                Overfitting
+                            </h2>
+                            <span class="text-xs font-mono text-emerald-400" id="badgeDiagnosis">Optimal</span>
+                        </div>
+
+                        <!-- Experiment Stats Summary Grid -->
+                        <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+                            <div class="bg-brand-dark p-2 rounded border border-gray-800">
+                                <span class="text-[10px] text-gray-400 block font-mono">TRAIN ACC / MSE</span>
+                                <span id="statTrainMetrics" class="text-xs font-bold font-mono text-gray-200">- /
+                                    -</span>
+                            </div>
+                            <div class="bg-brand-dark p-2 rounded border border-gray-800">
+                                <span class="text-[10px] text-gray-400 block font-mono">VAL ACC / MSE</span>
+                                <span id="statValMetrics" class="text-xs font-bold font-mono text-brand-accent">- /
+                                    -</span>
+                            </div>
+                            <div class="bg-brand-dark p-2 rounded border border-gray-800">
+                                <span class="text-[10px] text-gray-400 block font-mono">TEST ACC / MSE</span>
+                                <span id="statTestMetrics" class="text-xs font-bold font-mono text-emerald-400">- /
+                                    -</span>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Analysis Text Box -->
+                        <div id="boxDiagnosisDetails"
+                            class="bg-brand-dark/80 p-3 rounded-lg border border-gray-800 text-xs text-gray-300 leading-relaxed space-y-2 font-mono">
+                            <p>Belum ada pelatihan dilakukan. Silakan jalankan tombol <strong
+                                    class="text-brand-accent">▶ Latih</strong> untuk menghasilkan laporan evaluasi dan
+                                deteksi overfitting.</p>
+                        </div>
+                    </div>
+
+                    <!-- Per-Digit Accuracy Table -->
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-300 mb-2 font-mono">AKURASI PER-ANGKA (DATA UJI)</h3>
+                        <div class="grid grid-cols-5 gap-1 text-center font-mono text-[11px]" id="gridPerDigitAcc">
+                            <!-- Rendered dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 3: GALERI DATASET (28x28) -->
+        <div id="tab3" class="hidden space-y-4">
+            <div class="bg-brand-card p-4 rounded-xl border border-brand-border shadow-md">
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+                    <div>
+                        <h2 class="font-bold text-sm text-gray-200 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-brand-crimson"></span> Sampel Biner Dataset Sintetis
+                            (28x28 Dynamic)
+                        </h2>
+                        <p class="text-xs text-gray-400">Total Pola: <span id="txtDatasetTotalCount"
+                                class="font-mono text-brand-accent">1000</span> (80% Train, 10% Val, 10% Test)</p>
+                    </div>
+                    <button onclick="regenerateDataset()"
+                        class="px-3 py-1.5 bg-brand-maroon hover:bg-brand-maroonBright text-white text-xs font-semibold rounded shadow transition">
+                        ↻ Regenerasi Variasi Acak
+                    </button>
+                </div>
+
+                <!-- 2x10 Sample Display Grid -->
+                <div id="datasetGalleryGrid" class="grid grid-cols-2 sm:grid-cols-5 md:grid-cols-10 gap-3">
+                    <!-- Rendered dynamically: 2 images per digit 0-9 -->
                 </div>
             </div>
         </div>
 
-    </div>
+    </main>
 
-    <!-- STATUS BAR -->
-    <div class="status-bar">
-        <span class="status-text" id="status-text">Siap. Klik 'Generate' untuk membuat dataset.</span>
-        <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill"></div>
+    <!-- FOOTER STATUS & TERMINAL LOG -->
+    <footer class="bg-brand-card border-t border-brand-border p-3 space-y-2">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+
+            <!-- STATUS BAR & PROGRESS BAR -->
+            <div class="flex-1 space-y-1">
+                <div class="flex justify-between items-center text-xs font-mono">
+                    <span id="txtStatusLabel" class="text-gray-300">Status: Siap (Standby)</span>
+                    <span id="txtEpochProgress" class="text-brand-accent">Epoch: 0 (∞)</span>
+                </div>
+                <div class="w-full bg-brand-dark h-2 rounded-full overflow-hidden border border-gray-800">
+                    <div id="progressBar"
+                        class="bg-gradient-to-r from-brand-maroon to-brand-crimson h-full w-0 transition-all duration-150">
+                    </div>
+                </div>
+            </div>
+
+            <!-- TERMINAL LOG DISPLAY -->
+            <div class="w-full md:w-2/3 bg-brand-termBg rounded-lg p-2 border border-gray-800 font-mono text-[11px] text-brand-termGreen h-20 overflow-y-auto relative shadow-inner"
+                id="terminalLog">
+                <div>[SYSTEM] BPNN Studio Pro Initialized (784-16-16-10).</div>
+                <div>[BRAND] Powered by medycompany Neural Engine.</div>
+            </div>
+
         </div>
-    </div>
 
+        <!-- BRAND FOOTER CREDIT -->
+        <div
+            class="max-w-7xl mx-auto border-t border-gray-800/60 pt-2 flex flex-col sm:flex-row justify-between items-center text-[10px] text-gray-500 font-mono">
+            <div class="flex items-center space-x-2">
+                <span
+                    class="px-1.5 py-0.5 rounded bg-brand-maroon/30 text-brand-accent border border-brand-maroon/40 font-bold">medycompany</span>
+                <span>© 2026 BPNN Studio Pro — Neural Network digit recognition ecosystem</span>
+            </div>
+            <div>Muhammad Rizki Rahmady | NIM: 03041182429009</div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT APP ENGINE -->
     <script>
-        // =====================================================================
-        //  1. SEEDED RANDOM (Mulberry32)
-        // =====================================================================
-        function mulberry32(seed) {
-            return function () {
-                seed |= 0; seed = seed + 0x6D2B79F5 | 0;
-                let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
-                t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-                return ((t ^ t >>> 14) >>> 0) / 4294967296;
-            };
+        /* ==========================================================================
+           1. GLOBAL STATE & UTILITIES
+           ========================================================================== */
+        let dataset = { train: [], val: [], test: [] };
+        let bpnn = null;
+        let isTraining = false;
+        let stopRequested = false;
+
+        // UI Chart Instances
+        let chartMSEInstance = null;
+        let chartAccInstance = null;
+
+        // Drawing state
+        let drawMode = 'draw'; // 'draw' or 'erase'
+        let isDrawing = false;
+        let lastX = 0, lastY = 0;
+
+        // Log function
+        function logMsg(msg) {
+            const term = document.getElementById('terminalLog');
+            const item = document.createElement('div');
+            item.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            term.appendChild(item);
+            term.scrollTop = term.scrollHeight;
         }
 
-        let rng = mulberry32(42);
-        function rngInt(min, max) { return Math.floor(rng() * (max - min)) + min; }
-        function rngFloat(min, max) { return rng() * (max - min) + min; }
+        // Sigmoid & Derivative (dengan Flat-Spot Elimination + 0.01 seperti Python)
+        function sigmoid(x) {
+            const c = x < -30 ? -30 : (x > 30 ? 30 : x);
+            return 1 / (1 + Math.exp(-c));
+        }
+        function dSigmoid(y) {
+            return y * (1 - y) + 0.01;
+        }
 
-        // =====================================================================
-        //  2. DIGIT RENDERING & AUTO-CENTER (28x28)
-        // =====================================================================
-        const FONTS = [
-            'bold {s}px sans-serif',
-            'bold {s}px serif',
-            '{s}px monospace',
-            'italic bold {s}px serif',
-            'bold {s}px system-ui',
-            '{s}px Georgia',
-            'bold {s}px Courier New',
-        ];
+        /* ==========================================================================
+           2. BPNN ENGINE (784-16-16-10) FAST MINI-BATCH + NGUYEN-WIDROW
+           ========================================================================== */
+        class NeuralNetwork {
+            constructor(nIn = 784, nH1 = 16, nH2 = 16, nOut = 10) {
+                this.nIn = nIn;
+                this.nH1 = nH1;
+                this.nH2 = nH2;
+                this.nOut = nOut;
 
-        const workCanvas = document.createElement('canvas');
-        workCanvas.width = 28; workCanvas.height = 28;
-        const workCtx = workCanvas.getContext('2d', { willReadFrequently: true });
+                this.initWeights();
+            }
 
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = 28; tempCanvas.height = 28;
-        const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+            // Nguyen-Widrow Weight Initialization for hidden layers
+            initWeights() {
+                this.W1 = [];
+                this.dW1_prev = [];
+                const beta1 = 0.7 * Math.pow(this.nH1, 1 / this.nIn);
+                for (let i = 0; i < this.nIn; i++) {
+                    this.W1[i] = new Float64Array(this.nH1);
+                    this.dW1_prev[i] = new Float64Array(this.nH1);
+                    for (let j = 0; j < this.nH1; j++) {
+                        this.W1[i][j] = (Math.random() - 0.5);
+                    }
+                }
+                for (let j = 0; j < this.nH1; j++) {
+                    let norm = 0;
+                    for (let i = 0; i < this.nIn; i++) norm += this.W1[i][j] * this.W1[i][j];
+                    norm = Math.sqrt(norm) || 1;
+                    for (let i = 0; i < this.nIn; i++) this.W1[i][j] = (beta1 * this.W1[i][j]) / norm;
+                }
 
-        function centerBinaryPixels(pixels) {
-            let minX = 28, minY = 28, maxX = -1, maxY = -1;
-            for (let y = 0; y < 28; y++) {
-                for (let x = 0; x < 28; x++) {
-                    if (pixels[y * 28 + x] > 0) {
+                this.b1 = new Float64Array(this.nH1);
+                this.db1_prev = new Float64Array(this.nH1);
+                for (let j = 0; j < this.nH1; j++) this.b1[j] = (Math.random() * 2 - 1) * beta1;
+
+                this.W2 = [];
+                this.dW2_prev = [];
+                const beta2 = 0.7 * Math.pow(this.nH2, 1 / this.nH1);
+                for (let i = 0; i < this.nH1; i++) {
+                    this.W2[i] = new Float64Array(this.nH2);
+                    this.dW2_prev[i] = new Float64Array(this.nH2);
+                    for (let j = 0; j < this.nH2; j++) {
+                        this.W2[i][j] = (Math.random() - 0.5);
+                    }
+                }
+                for (let j = 0; j < this.nH2; j++) {
+                    let norm = 0;
+                    for (let i = 0; i < this.nH1; i++) norm += this.W2[i][j] * this.W2[i][j];
+                    norm = Math.sqrt(norm) || 1;
+                    for (let i = 0; i < this.nH1; i++) this.W2[i][j] = (beta2 * this.W2[i][j]) / norm;
+                }
+
+                this.b2 = new Float64Array(this.nH2);
+                this.db2_prev = new Float64Array(this.nH2);
+                for (let j = 0; j < this.nH2; j++) this.b2[j] = (Math.random() * 2 - 1) * beta2;
+
+                this.W3 = [];
+                this.dW3_prev = [];
+                for (let i = 0; i < this.nH2; i++) {
+                    this.W3[i] = new Float64Array(this.nOut);
+                    this.dW3_prev[i] = new Float64Array(this.nOut);
+                    for (let j = 0; j < this.nOut; j++) {
+                        this.W3[i][j] = (Math.random() - 0.5);
+                    }
+                }
+
+                this.b3 = new Float64Array(this.nOut);
+                this.db3_prev = new Float64Array(this.nOut);
+                for (let j = 0; j < this.nOut; j++) this.b3[j] = (Math.random() - 0.5);
+            }
+
+            // Forward Pass
+            forward(x) {
+                this.a1 = new Float64Array(this.nH1);
+                for (let j = 0; j < this.nH1; j++) {
+                    let sum = this.b1[j];
+                    for (let i = 0; i < this.nIn; i++) {
+                        if (x[i] !== 0) sum += x[i] * this.W1[i][j];
+                    }
+                    this.a1[j] = sigmoid(sum);
+                }
+
+                this.a2 = new Float64Array(this.nH2);
+                for (let j = 0; j < this.nH2; j++) {
+                    let sum = this.b2[j];
+                    for (let i = 0; i < this.nH1; i++) {
+                        sum += this.a1[i] * this.W2[i][j];
+                    }
+                    this.a2[j] = sigmoid(sum);
+                }
+
+                this.y = new Float64Array(this.nOut);
+                for (let j = 0; j < this.nOut; j++) {
+                    let sum = this.b3[j];
+                    for (let i = 0; i < this.nH2; i++) {
+                        sum += this.a2[i] * this.W3[i][j];
+                    }
+                    this.y[j] = sigmoid(sum);
+                }
+
+                return this.y;
+            }
+
+            // Fast Mini-Batch Epoch (batch_size = 32, tanpa weight_decay agar menembus MSE 0.000001)
+            trainEpochBatch(dataSplit, alpha = 0.8, momentum = 0.85, batchSize = 32) {
+                const n = dataSplit.length;
+                const indices = new Int32Array(n);
+                for (let i = 0; i < n; i++) indices[i] = i;
+                for (let i = n - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    const tmp = indices[i];
+                    indices[i] = indices[j];
+                    indices[j] = tmp;
+                }
+
+                const gW1 = Array.from({ length: this.nIn }, () => new Float64Array(this.nH1));
+                const gb1 = new Float64Array(this.nH1);
+                const gW2 = Array.from({ length: this.nH1 }, () => new Float64Array(this.nH2));
+                const gb2 = new Float64Array(this.nH2);
+                const gW3 = Array.from({ length: this.nH2 }, () => new Float64Array(this.nOut));
+                const gb3 = new Float64Array(this.nOut);
+
+                const delta3 = new Float64Array(this.nOut);
+                const delta2 = new Float64Array(this.nH2);
+                const delta1 = new Float64Array(this.nH1);
+
+                for (let start = 0; start < n; start += batchSize) {
+                    const end = Math.min(start + batchSize, n);
+                    const bs = end - start;
+
+                    for (let i = 0; i < this.nIn; i++) gW1[i].fill(0);
+                    gb1.fill(0);
+                    for (let i = 0; i < this.nH1; i++) gW2[i].fill(0);
+                    gb2.fill(0);
+                    for (let i = 0; i < this.nH2; i++) gW3[i].fill(0);
+                    gb3.fill(0);
+
+                    for (let idxPos = start; idxPos < end; idxPos++) {
+                        const sample = dataSplit[indices[idxPos]];
+                        const x = sample.input;
+                        const target = sample.target;
+
+                        this.forward(x);
+
+                        for (let k = 0; k < this.nOut; k++) {
+                            delta3[k] = (target[k] - this.y[k]) * dSigmoid(this.y[k]);
+                            gb3[k] += delta3[k];
+                        }
+
+                        for (let j = 0; j < this.nH2; j++) {
+                            let sum = 0;
+                            const w3j = this.W3[j];
+                            const gw3j = gW3[j];
+                            const a2j = this.a2[j];
+                            for (let k = 0; k < this.nOut; k++) {
+                                sum += delta3[k] * w3j[k];
+                                gw3j[k] += a2j * delta3[k];
+                            }
+                            delta2[j] = sum * dSigmoid(a2j);
+                            gb2[j] += delta2[j];
+                        }
+
+                        for (let i = 0; i < this.nH1; i++) {
+                            let sum = 0;
+                            const w2i = this.W2[i];
+                            const gw2i = gW2[i];
+                            const a1i = this.a1[i];
+                            for (let j = 0; j < this.nH2; j++) {
+                                sum += delta2[j] * w2i[j];
+                                gw2i[j] += a1i * delta2[j];
+                            }
+                            delta1[i] = sum * dSigmoid(a1i);
+                            gb1[i] += delta1[i];
+                        }
+
+                        for (let i = 0; i < this.nIn; i++) {
+                            const xi = x[i];
+                            if (xi === 0) continue;
+                            const gw1i = gW1[i];
+                            for (let j = 0; j < this.nH1; j++) {
+                                gw1i[j] += xi * delta1[j];
+                            }
+                        }
+                    }
+
+                    const skala = alpha / bs;
+
+                    for (let j = 0; j < this.nH2; j++) {
+                        const w3j = this.W3[j], dw3j = this.dW3_prev[j], gw3j = gW3[j];
+                        for (let k = 0; k < this.nOut; k++) {
+                            dw3j[k] = skala * gw3j[k] + momentum * dw3j[k];
+                            w3j[k] += dw3j[k];
+                        }
+                    }
+                    for (let k = 0; k < this.nOut; k++) {
+                        this.db3_prev[k] = skala * gb3[k] + momentum * this.db3_prev[k];
+                        this.b3[k] += this.db3_prev[k];
+                    }
+
+                    for (let i = 0; i < this.nH1; i++) {
+                        const w2i = this.W2[i], dw2i = this.dW2_prev[i], gw2i = gW2[i];
+                        for (let j = 0; j < this.nH2; j++) {
+                            dw2i[j] = skala * gw2i[j] + momentum * dw2i[j];
+                            w2i[j] += dw2i[j];
+                        }
+                    }
+                    for (let j = 0; j < this.nH2; j++) {
+                        this.db2_prev[j] = skala * gb2[j] + momentum * this.db2_prev[j];
+                        this.b2[j] += this.db2_prev[j];
+                    }
+
+                    for (let i = 0; i < this.nIn; i++) {
+                        const w1i = this.W1[i], dw1i = this.dW1_prev[i], gw1i = gW1[i];
+                        for (let j = 0; j < this.nH1; j++) {
+                            dw1i[j] = skala * gw1i[j] + momentum * dw1i[j];
+                            w1i[j] += dw1i[j];
+                        }
+                    }
+                    for (let j = 0; j < this.nH1; j++) {
+                        this.db1_prev[j] = skala * gb1[j] + momentum * this.db1_prev[j];
+                        this.b1[j] += this.db1_prev[j];
+                    }
+                }
+            }
+
+            // Evaluate dataset split -> returns { mse, accuracy, predictions }
+            evaluate(dataSplit) {
+                let totalMSE = 0;
+                let correct = 0;
+                const predictions = [];
+
+                for (let sample of dataSplit) {
+                    const out = this.forward(sample.input);
+                    let sampleMSE = 0;
+                    let maxIdx = 0;
+                    let maxVal = out[0];
+
+                    for (let k = 0; k < this.nOut; k++) {
+                        const err = sample.target[k] - out[k];
+                        sampleMSE += err * err;
+                        if (out[k] > maxVal) {
+                            maxVal = out[k];
+                            maxIdx = k;
+                        }
+                    }
+                    sampleMSE /= this.nOut;
+                    totalMSE += sampleMSE;
+
+                    if (maxIdx === sample.label) correct++;
+                    predictions.push({ pred: maxIdx, actual: sample.label, probs: Array.from(out) });
+                }
+
+                return {
+                    mse: totalMSE / (dataSplit.length || 1),
+                    accuracy: (correct / (dataSplit.length || 1)) * 100,
+                    predictions
+                };
+            }
+        }
+
+        /* ==========================================================================
+           3. SYNTHETIC 28x28 DATASET GENERATOR & AUTO-CENTERING
+           ========================================================================== */
+        function generateSyntheticDataset(samplesPerDigit = 100) {
+            if (samplesPerDigit < 50) samplesPerDigit = 50;
+            logMsg(`Menggenerasi dataset sintetis (${samplesPerDigit} sampel/angka = ${samplesPerDigit * 10} pola)...`);
+            const allSamples = [];
+            const fonts = ['sans-serif', 'serif', 'monospace', 'Arial', 'Courier New', 'Georgia'];
+
+            const c = document.createElement('canvas');
+            c.width = 50; c.height = 50;
+            const ctx = c.getContext('2d');
+
+            for (let digit = 0; digit <= 9; digit++) {
+                const target = new Float64Array(10);
+                target[digit] = 1.0;
+
+                for (let s = 0; s < samplesPerDigit; s++) {
+                    ctx.fillStyle = '#000000';
+                    ctx.fillRect(0, 0, 50, 50);
+
+                    const font = fonts[Math.floor(Math.random() * fonts.length)];
+                    const size = Math.floor(26 + Math.random() * 10);
+                    const bold = Math.random() > 0.4 ? 'bold' : '';
+                    const angle = (Math.random() * 24 - 12) * Math.PI / 180;
+                    const offsetX = (Math.random() * 8 - 4);
+                    const offsetY = (Math.random() * 8 - 4);
+
+                    ctx.save();
+                    ctx.translate(25 + offsetX, 25 + offsetY);
+                    ctx.rotate(angle);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = `${bold} ${size}px ${font}`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(digit.toString(), 0, 0);
+                    ctx.restore();
+
+                    const inputVec = autoCenterAndCrop(ctx, 50, 50);
+                    allSamples.push({ input: inputVec, target, label: digit });
+                }
+            }
+
+            allSamples.sort(() => Math.random() - 0.5);
+
+            dataset = { train: [], val: [], test: [] };
+            const digitBuckets = Array.from({ length: 10 }, () => []);
+            for (let item of allSamples) digitBuckets[item.label].push(item);
+
+            for (let d = 0; d < 10; d++) {
+                const bucket = digitBuckets[d];
+                const nTrain = Math.floor(bucket.length * 0.8);
+                const nVal = Math.floor(bucket.length * 0.1);
+
+                dataset.train.push(...bucket.slice(0, nTrain));
+                dataset.val.push(...bucket.slice(nTrain, nTrain + nVal));
+                dataset.test.push(...bucket.slice(nTrain + nVal));
+            }
+
+            dataset.train.sort(() => Math.random() - 0.5);
+            dataset.val.sort(() => Math.random() - 0.5);
+            dataset.test.sort(() => Math.random() - 0.5);
+
+            logMsg(`Dataset berhasil dibuat: Total=${allSamples.length} | Train=${dataset.train.length}, Val=${dataset.val.length}, Test=${dataset.test.length}`);
+            document.getElementById('txtDatasetTotalCount').textContent = allSamples.length;
+
+            renderDatasetGallery();
+        }
+
+        function autoCenterAndCrop(srcCtx, srcW, srcH) {
+            const imgData = srcCtx.getImageData(0, 0, srcW, srcH);
+            const data = imgData.data;
+
+            let minX = srcW, minY = srcH, maxX = -1, maxY = -1;
+            for (let y = 0; y < srcH; y++) {
+                for (let x = 0; x < srcW; x++) {
+                    const idx = (y * srcW + x) * 4;
+                    if (data[idx] > 30) {
                         if (x < minX) minX = x;
                         if (x > maxX) maxX = x;
                         if (y < minY) minY = y;
@@ -934,871 +894,715 @@
                     }
                 }
             }
-            if (maxX < minX) return pixels;
 
-            const w = maxX - minX + 1;
-            const h = maxY - minY + 1;
-            const scale = 20.0 / Math.max(w, h);
-            const nw = Math.max(1, Math.round(w * scale));
-            const nh = Math.max(1, Math.round(h * scale));
-            const ox = Math.floor((28 - nw) / 2);
-            const oy = Math.floor((28 - nh) / 2);
+            const resCanvas = document.createElement('canvas');
+            resCanvas.width = 28; resCanvas.height = 28;
+            const resCtx = resCanvas.getContext('2d');
+            resCtx.fillStyle = '#000000';
+            resCtx.fillRect(0, 0, 28, 28);
 
-            // Draw source to tempCanvas
-            const imgData = tempCtx.createImageData(28, 28);
+            if (maxX >= minX && maxY >= minY) {
+                const bboxW = maxX - minX + 1;
+                const bboxH = maxY - minY + 1;
+
+                const scale = 20 / Math.max(bboxW, bboxH);
+                const newW = Math.max(1, Math.round(bboxW * scale));
+                const newH = Math.max(1, Math.round(bboxH * scale));
+
+                const posX = Math.floor((28 - newW) / 2);
+                const posY = Math.floor((28 - newH) / 2);
+
+                resCtx.drawImage(srcCtx.canvas, minX, minY, bboxW, bboxH, posX, posY, newW, newH);
+            }
+
+            const outData = resCtx.getImageData(0, 0, 28, 28).data;
+            const vec = new Float64Array(784);
             for (let i = 0; i < 784; i++) {
-                const v = pixels[i] ? 255 : 0;
-                imgData.data[i * 4] = v;
-                imgData.data[i * 4 + 1] = v;
-                imgData.data[i * 4 + 2] = v;
-                imgData.data[i * 4 + 3] = 255;
+                vec[i] = outData[i * 4] > 50 ? 1.0 : 0.0;
             }
-            tempCtx.putImageData(imgData, 0, 0);
-
-            workCtx.fillStyle = '#000';
-            workCtx.fillRect(0, 0, 28, 28);
-            workCtx.drawImage(tempCanvas, minX, minY, w, h, ox, oy, nw, nh);
-
-            const outData = workCtx.getImageData(0, 0, 28, 28).data;
-            const out = new Uint8Array(784);
-            for (let i = 0; i < 784; i++) {
-                out[i] = outData[i * 4] > 80 ? 1 : 0;
-            }
-            return out;
+            return vec;
         }
 
-        function generateDigitPixels(digit, options = {}) {
-            const fontIdx = options.fontIdx ?? rngInt(0, FONTS.length);
-            const fontSize = options.skala ? Math.round(options.skala * 28) : rngInt(17, 25);
-            const rotation = options.sudut ?? rngFloat(-14, 14);
-            const offsetX = options.offsetX ?? rngFloat(-2, 2);
-            const offsetY = options.offsetY ?? rngFloat(-2, 2);
-            const noiseLevel = options.noise ?? 0;
-            const blur = options.blur ?? false;
+        /* ==========================================================================
+           4. INTERACTIVE DRAW CANVAS LOGIC
+           ========================================================================== */
+        const drawCanvas = document.getElementById('drawCanvas');
+        const drawCtx = drawCanvas.getContext('2d');
 
-            workCtx.fillStyle = '#000';
-            workCtx.fillRect(0, 0, 28, 28);
+        function initDrawCanvas() {
+            drawCtx.fillStyle = '#000000';
+            drawCtx.fillRect(0, 0, 280, 280);
 
-            workCtx.save();
-            workCtx.translate(14 + offsetX, 14 + offsetY);
-            workCtx.rotate(rotation * Math.PI / 180);
-            workCtx.fillStyle = '#fff';
-            workCtx.font = FONTS[fontIdx % FONTS.length].replace('{s}', fontSize);
-            workCtx.textAlign = 'center';
-            workCtx.textBaseline = 'middle';
-            workCtx.fillText(String(digit), 0, 0);
-            workCtx.restore();
-
-            if (blur) {
-                workCtx.filter = 'blur(0.7px)';
-                workCtx.drawImage(workCanvas, 0, 0);
-                workCtx.filter = 'none';
-            }
-
-            const imgData = workCtx.getImageData(0, 0, 28, 28).data;
-            let pixels = new Uint8Array(784);
-            for (let i = 0; i < 784; i++) {
-                let v = imgData[i * 4] > 90 ? 1 : 0;
-                if (noiseLevel > 0) {
-                    const r = rng();
-                    if (r < noiseLevel / 2) v = 0;
-                    else if (r > 1 - noiseLevel / 2) v = 1;
-                }
-                pixels[i] = v;
-            }
-
-            pixels = centerBinaryPixels(pixels);
-            let activePixels = 0;
-            for (let i = 0; i < 784; i++) activePixels += pixels[i];
-            return { pixels, activePixels };
-        }
-
-        function drawPixelsToCanvas(pixels, canvas) {
-            const ctx = canvas.getContext('2d');
-            const imgData = ctx.createImageData(28, 28);
-            for (let i = 0; i < 784; i++) {
-                const v = pixels[i] ? 255 : 0;
-                imgData.data[i * 4] = v;
-                imgData.data[i * 4 + 1] = v;
-                imgData.data[i * 4 + 2] = v;
-                imgData.data[i * 4 + 3] = 255;
-            }
-            ctx.putImageData(imgData, 0, 0);
-        }
-
-        // =====================================================================
-        //  3. STATE & TABS
-        // =====================================================================
-        let generatedImages = []; // [{ digit, pixels: Uint8Array(784), activePixels }]
-        let currentPage = 0;
-        const perPage = 100;
-
-        function switchTab(name) {
-            const names = ['gallery', 'detail', 'stats', 'bpnn'];
-            document.querySelectorAll('.tab-btn').forEach((b, i) => {
-                b.classList.toggle('active', names[i] === name);
-            });
-            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-            document.getElementById('tab-' + name).classList.add('active');
-        }
-
-        function presetGenerate(nPerDigit) {
-            document.getElementById('inp-jumlah').value = nPerDigit;
-            for (let d = 0; d < 10; d++) document.getElementById('d' + d).checked = true;
-            generateAll();
-        }
-
-        // =====================================================================
-        //  4. GENERATE ALL & GALLERY
-        // =====================================================================
-        function generateAll() {
-            let jumlah = parseInt(document.getElementById('inp-jumlah').value) || 100;
-            if (jumlah < 50) {
-                jumlah = 50;
-                document.getElementById('inp-jumlah').value = 50;
-            }
-            const noise = parseFloat(document.getElementById('inp-noise').value) || 0;
-            const seed = parseInt(document.getElementById('inp-seed').value) || 42;
-            const blur = document.getElementById('inp-blur').checked;
-
-            const digits = [];
-            for (let d = 0; d < 10; d++) {
-                if (document.getElementById('d' + d).checked) digits.push(d);
-            }
-            if (digits.length === 0) { alert('Pilih minimal satu angka!'); return; }
-
-            rng = mulberry32(seed);
-            generatedImages = [];
-            const total = digits.length * jumlah;
-
-            setStatus(`Generating ${total} pola...`);
-            setProgress(0);
-
-            let count = 0;
-            const batchSize = 100;
-
-            function processBatch() {
-                const end = Math.min(count + batchSize, total);
-                while (count < end) {
-                    const digit = digits[Math.floor(count / jumlah)];
-                    const { pixels, activePixels } = generateDigitPixels(digit, { noise, blur });
-                    generatedImages.push({ digit, pixels, activePixels });
-                    count++;
-                }
-                setProgress(count / total * 100);
-                setStatus(`Generating... ${count}/${total} (${Math.round(count / total * 100)}%)`);
-
-                if (count < total) {
-                    setTimeout(processBatch, 0);
-                } else {
-                    currentPage = 0;
-                    updateGallery();
-                    updateStats();
-                    setStatus(`Selesai! ${total} pola (28×28) siap diunduh atau dilatih di BPNN Studio.`);
-                    setProgress(100);
-                    document.getElementById('download-section').style.display = 'block';
-                }
-            }
-            processBatch();
-        }
-
-        function getFilteredImages() {
-            const filterVal = document.getElementById('filter-gallery').value;
-            if (filterVal === 'all') return generatedImages;
-            const target = parseInt(filterVal);
-            return generatedImages.filter(item => item.digit === target);
-        }
-
-        function updateGallery() {
-            const grid = document.getElementById('gallery-grid');
-            grid.innerHTML = '';
-
-            const list = getFilteredImages();
-            const totalPages = Math.max(1, Math.ceil(list.length / perPage));
-            if (currentPage >= totalPages) currentPage = totalPages - 1;
-
-            const start = currentPage * perPage;
-            const end = Math.min(start + perPage, list.length);
-
-            document.getElementById('page-info').textContent = `Halaman ${currentPage + 1} / ${totalPages}`;
-            document.getElementById('total-info').textContent = `Menampilkan ${list.length} dari ${generatedImages.length} pola`;
-
-            for (let i = start; i < end; i++) {
-                const item = list[i];
-                const div = document.createElement('div');
-                div.className = 'gallery-item';
-
-                const c = document.createElement('canvas');
-                c.width = 28; c.height = 28;
-                drawPixelsToCanvas(item.pixels, c);
-                div.appendChild(c);
-
-                const tag = document.createElement('span');
-                tag.className = 'digit-tag';
-                tag.textContent = item.digit;
-                div.appendChild(tag);
-
-                grid.appendChild(div);
-            }
-        }
-
-        function prevPage() { if (currentPage > 0) { currentPage--; updateGallery(); } }
-        function nextPage() {
-            const totalPages = Math.max(1, Math.ceil(getFilteredImages().length / perPage));
-            if (currentPage < totalPages - 1) { currentPage++; updateGallery(); }
-        }
-
-        // =====================================================================
-        //  5. SINGLE PREVIEW & VARIATIONS
-        // =====================================================================
-        function generateSingle() {
-            const digit = parseInt(document.getElementById('inp-single-digit').value);
-            const noise = parseFloat(document.getElementById('inp-noise').value) || 0;
-            const blur = document.getElementById('inp-blur').checked;
-            const skalaStr = document.getElementById('inp-skala').value.trim();
-            const rotasiStr = document.getElementById('inp-rotasi').value.trim();
-
-            const opts = { noise, blur };
-            if (skalaStr !== 'auto') opts.skala = parseFloat(skalaStr);
-            if (rotasiStr !== 'auto') opts.sudut = parseFloat(rotasiStr);
-
-            const { pixels, activePixels } = generateDigitPixels(digit, opts);
-            drawPixelsToCanvas(pixels, tempCanvas);
-
-            const bigC = document.getElementById('big-preview');
-            const bigCtx = bigC.getContext('2d');
-            bigCtx.imageSmoothingEnabled = false;
-            bigCtx.clearRect(0, 0, 168, 168);
-            bigCtx.drawImage(tempCanvas, 0, 0, 168, 168);
-
-            document.getElementById('preview-info').innerHTML =
-                `Digit&nbsp;&nbsp;&nbsp;&nbsp;: <strong style="color:#e94560">${digit}</strong><br>` +
-                `Ukuran&nbsp;&nbsp;&nbsp;: 28 × 28<br>` +
-                `Piksel 1 : ${activePixels}<br>` +
-                `Piksel 0 : ${784 - activePixels}<br>` +
-                `Densitas : ${(activePixels / 784 * 100).toFixed(1)}%`;
-        }
-
-        function generateVariations() {
-            generateSingle();
-            const digit = parseInt(document.getElementById('inp-single-digit').value);
-            const noise = parseFloat(document.getElementById('inp-noise').value) || 0;
-            const blur = document.getElementById('inp-blur').checked;
-
-            const grid = document.getElementById('variations-grid');
-            grid.innerHTML = '';
-
-            for (let i = 0; i < 25; i++) {
-                const { pixels } = generateDigitPixels(digit, { noise, blur });
-                const c = document.createElement('canvas');
-                c.width = 28; c.height = 28;
-                drawPixelsToCanvas(pixels, c);
-                grid.appendChild(c);
-            }
-        }
-
-        // =====================================================================
-        //  6. STATISTICS
-        // =====================================================================
-        function updateStats() {
-            if (generatedImages.length === 0) return;
-
-            const counts = new Array(10).fill(0);
-            const densitySums = new Array(10).fill(0);
-            let totalDensity = 0, minD = 100, maxD = 0;
-
-            generatedImages.forEach(item => {
-                counts[item.digit]++;
-                const d = item.activePixels / 784 * 100;
-                densitySums[item.digit] += d;
-                totalDensity += d;
-                if (d < minD) minD = d;
-                if (d > maxD) maxD = d;
-            });
-
-            const colors = ['#e74c3c', '#e67e22', '#f1c40f', '#2ecc71', '#1abc9c',
-                '#3498db', '#9b59b6', '#e91e63', '#607d8b', '#795548'];
-
-            const maxCount = Math.max(...counts, 1);
-            const distDiv = document.getElementById('chart-distribution');
-            distDiv.innerHTML = '';
-            for (let d = 0; d < 10; d++) {
-                distDiv.innerHTML += `
-            <div class="bar-col">
-                <span class="bar-value">${counts[d]}</span>
-                <div class="bar" style="background:${colors[d]};height:${(counts[d] / maxCount * 82)}%"></div>
-                <span class="bar-label">${d}</span>
-            </div>`;
-            }
-
-            const avgDensities = densitySums.map((s, i) => counts[i] > 0 ? s / counts[i] : 0);
-            const maxDensity = Math.max(...avgDensities, 1);
-            const densDiv = document.getElementById('chart-density');
-            densDiv.innerHTML = '';
-            for (let d = 0; d < 10; d++) {
-                densDiv.innerHTML += `
-            <div class="bar-col">
-                <span class="bar-value">${avgDensities[d].toFixed(1)}%</span>
-                <div class="bar" style="background:${colors[d]};height:${(avgDensities[d] / maxDensity * 82)}%"></div>
-                <span class="bar-label">${d}</span>
-            </div>`;
-            }
-
-            const avgAll = totalDensity / generatedImages.length;
-            document.getElementById('stats-summary').innerHTML =
-                `Total Citra: <strong>${generatedImages.length}</strong> &nbsp;|&nbsp; ` +
-                `Densitas Rata-rata: <strong>${avgAll.toFixed(1)}%</strong> &nbsp;|&nbsp; ` +
-                `Min: <strong>${minD.toFixed(1)}%</strong> &nbsp;|&nbsp; ` +
-                `Max: <strong>${maxD.toFixed(1)}%</strong>`;
-        }
-
-        // =====================================================================
-        //  7. DOWNLOAD ZIP & CSV
-        // =====================================================================
-        async function downloadZip() {
-            if (generatedImages.length === 0) { alert("Belum ada gambar! Klik 'Generate' dulu."); return; }
-            setStatus('Menyiapkan ZIP...');
-
-            if (typeof JSZip === 'undefined') {
-                await new Promise((resolve, reject) => {
-                    const s = document.createElement('script');
-                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-                    s.onload = resolve;
-                    s.onerror = () => reject(new Error('Gagal memuat JSZip'));
-                    document.head.appendChild(s);
-                });
-            }
-
-            const zip = new JSZip();
-            const counters = new Array(10).fill(0);
-
-            for (let i = 0; i < generatedImages.length; i++) {
-                const item = generatedImages[i];
-                drawPixelsToCanvas(item.pixels, tempCanvas);
-                const folder = zip.folder(String(item.digit));
-                const num = counters[item.digit]++;
-                const blob = await new Promise(resolve => tempCanvas.toBlob(resolve, 'image/png'));
-                folder.file(`${item.digit}_${String(num).padStart(4, '0')}.png`, blob);
-                if (i % 80 === 0) setProgress(i / generatedImages.length * 100);
-            }
-
-            setStatus('Mengompresi file ZIP...');
-            const content = await zip.generateAsync({ type: 'blob' });
-            triggerDownload(content, `dataset_angka_${generatedImages.length}_pola.zip`);
-            setStatus(`ZIP berhasil di-download! (${generatedImages.length} gambar)`);
-            setProgress(100);
-        }
-
-        function downloadCsv() {
-            if (generatedImages.length === 0) { alert("Belum ada data! Klik 'Generate' dulu."); return; }
-            setStatus('Menyiapkan file CSV...');
-            const header = ['label', ...Array.from({ length: 784 }, (_, i) => 'p' + i)].join(',');
-            const rows = [header];
-            for (let i = 0; i < generatedImages.length; i++) {
-                const item = generatedImages[i];
-                rows.push(item.digit + ',' + item.pixels.join(','));
-            }
-            const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-            triggerDownload(blob, `dataset_angka_${generatedImages.length}_pola.csv`);
-            setStatus(`CSV berhasil di-download! (${generatedImages.length} baris)`);
-        }
-
-        function triggerDownload(blob, filename) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // =====================================================================
-        //  8. BPNN ENGINE (784 - 16 - 16 - 10) + NGUYEN-WIDROW + MOMENTUM (FAST)
-        // =====================================================================
-        class BPNN {
-            constructor(layers = [784, 16, 16, 10]) {
-                this.layers = layers;
-                this.W = [];
-                this.b = [];
-                this.vW = [];
-                this.vb = [];
-                this.initNguyenWidrow();
-            }
-
-            initNguyenWidrow() {
-                this.W = []; this.b = []; this.vW = []; this.vb = [];
-                const localRng = mulberry32(42);
-                for (let l = 0; l < this.layers.length - 1; l++) {
-                    const nIn = this.layers[l], nOut = this.layers[l + 1];
-                    const W = new Float64Array(nIn * nOut);
-                    const b = new Float64Array(nOut);
-                    if (l < this.layers.length - 2) {
-                        const beta = 0.7 * Math.pow(nOut, 1.0 / nIn);
-                        for (let j = 0; j < nOut; j++) {
-                            let normSq = 0;
-                            for (let i = 0; i < nIn; i++) {
-                                const r = localRng() - 0.5;
-                                W[i * nOut + j] = r;
-                                normSq += r * r;
-                            }
-                            const norm = Math.sqrt(normSq) + 1e-12;
-                            for (let i = 0; i < nIn; i++) W[i * nOut + j] = beta * (W[i * nOut + j] / norm);
-                            b[j] = (localRng() * 2 - 1) * beta;
-                        }
-                    } else {
-                        for (let k = 0; k < W.length; k++) W[k] = localRng() - 0.5;
-                        for (let j = 0; j < nOut; j++) b[j] = localRng() - 0.5;
-                    }
-                    this.W.push(W);
-                    this.b.push(b);
-                    this.vW.push(new Float64Array(nIn * nOut));
-                    this.vb.push(new Float64Array(nOut));
-                }
-            }
-
-            forwardOne(x) {
-                const acts = [x];
-                let a = x;
-                for (let l = 0; l < this.W.length; l++) {
-                    const nIn = this.layers[l], nOut = this.layers[l + 1];
-                    const W = this.W[l], b = this.b[l];
-                    const next = new Float64Array(nOut);
-                    for (let j = 0; j < nOut; j++) {
-                        let sum = b[j];
-                        for (let i = 0; i < nIn; i++) {
-                            const xi = a[i];
-                            if (xi !== 0) sum += xi * W[i * nOut + j];
-                        }
-                        const c = sum < -30 ? -30 : (sum > 30 ? 30 : sum);
-                        next[j] = 1.0 / (1.0 + Math.exp(-c));
-                    }
-                    acts.push(next);
-                    a = next;
-                }
-                return acts;
-            }
-
-            trainEpoch(X, labels, alpha = 0.8, momentum = 0.85, batchSize = 32) {
-                const n = X.length;
-                const idx = Array.from({ length: n }, (_, i) => i);
-                for (let i = n - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    const tmp = idx[i]; idx[i] = idx[j]; idx[j] = tmp;
-                }
-
-                const L = this.W.length;
-                const gW = this.W.map(w => new Float64Array(w.length));
-                const gb = this.b.map(b => new Float64Array(b.length));
-
-                for (let start = 0; start < n; start += batchSize) {
-                    const end = Math.min(start + batchSize, n);
-                    const bs = end - start;
-                    for (let l = 0; l < L; l++) { gW[l].fill(0); gb[l].fill(0); }
-
-                    for (let k = start; k < end; k++) {
-                        const sampleIdx = idx[k];
-                        const acts = this.forwardOne(X[sampleIdx]);
-                        const targetDigit = labels[sampleIdx];
-
-                        const deltas = new Array(L);
-                        const out = acts[L];
-                        const dOut = new Float64Array(10);
-                        for (let j = 0; j < 10; j++) {
-                            const t = j === targetDigit ? 1.0 : 0.0;
-                            dOut[j] = (t - out[j]) * (out[j] * (1.0 - out[j]) + 0.01);
-                        }
-                        deltas[L - 1] = dOut;
-
-                        for (let l = L - 2; l >= 0; l--) {
-                            const nCur = this.layers[l + 1], nNext = this.layers[l + 2];
-                            const Wnext = this.W[l + 1], dNext = deltas[l + 1], aCur = acts[l + 1];
-                            const dCur = new Float64Array(nCur);
-                            for (let i = 0; i < nCur; i++) {
-                                let s = 0;
-                                const row = i * nNext;
-                                for (let j = 0; j < nNext; j++) s += dNext[j] * Wnext[row + j];
-                                dCur[i] = s * (aCur[i] * (1.0 - aCur[i]) + 0.01);
-                            }
-                            deltas[l] = dCur;
-                        }
-
-                        for (let l = 0; l < L; l++) {
-                            const nIn = this.layers[l], nOut = this.layers[l + 1];
-                            const aIn = acts[l], d = deltas[l], gwL = gW[l], gbL = gb[l];
-                            for (let j = 0; j < nOut; j++) gbL[j] += d[j];
-                            for (let i = 0; i < nIn; i++) {
-                                const ai = aIn[i];
-                                if (ai !== 0) {
-                                    const row = i * nOut;
-                                    for (let j = 0; j < nOut; j++) gwL[row + j] += ai * d[j];
-                                }
-                            }
-                        }
-                    }
-
-                    const scale = alpha / bs;
-                    for (let l = 0; l < L; l++) {
-                        const W = this.W[l], vW = this.vW[l], gwL = gW[l];
-                        for (let m = 0; m < W.length; m++) {
-                            vW[m] = scale * gwL[m] + momentum * vW[m];
-                            W[m] += vW[m];
-                        }
-                        const b = this.b[l], vb = this.vb[l], gbL = gb[l];
-                        for (let j = 0; j < b.length; j++) {
-                            vb[j] = scale * gbL[j] + momentum * vb[j];
-                            b[j] += vb[j];
-                        }
-                    }
-                }
-            }
-
-            evaluate(X, labels) {
-                let sumSq = 0, correct = 0;
-                const cm = Array.from({ length: 10 }, () => new Array(10).fill(0));
-                for (let i = 0; i < X.length; i++) {
-                    const out = this.forwardOne(X[i])[this.W.length];
-                    const actual = labels[i];
-                    let bestJ = 0, bestVal = out[0];
-                    for (let j = 0; j < 10; j++) {
-                        const diff = (j === actual ? 1.0 : 0.0) - out[j];
-                        sumSq += diff * diff;
-                        if (out[j] > bestVal) { bestVal = out[j]; bestJ = j; }
-                    }
-                    if (bestJ === actual) correct++;
-                    cm[actual][bestJ]++;
-                }
+            const getPos = (e) => {
+                const rect = drawCanvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
                 return {
-                    mse: sumSq / (X.length * 10),
-                    acc: correct / X.length,
-                    cm
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
                 };
-            }
-        }
-
-        const model = new BPNN([784, 16, 16, 10]);
-        let splitData = null;
-        let isTraining = false;
-        let stopFlag = false;
-        let histEpoch = [], histMseTr = [], histMseVa = [], histAccTr = [], histAccVa = [];
-
-        function prepareSplitData() {
-            const byDigit = Array.from({ length: 10 }, () => []);
-            generatedImages.forEach(item => byDigit[item.digit].push(item));
-
-            const trX = [], trY = [], vaX = [], vaY = [], teX = [], teY = [];
-            for (let d = 0; d < 10; d++) {
-                const arr = byDigit[d].slice();
-                for (let i = arr.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [arr[i], arr[j]] = [arr[j], arr[i]];
-                }
-                const nTr = Math.floor(0.8 * arr.length);
-                const nVa = Math.floor(0.1 * arr.length);
-                arr.slice(0, nTr).forEach(it => { trX.push(it.pixels); trY.push(it.digit); });
-                arr.slice(nTr, nTr + nVa).forEach(it => { vaX.push(it.pixels); vaY.push(it.digit); });
-                arr.slice(nTr + nVa).forEach(it => { teX.push(it.pixels); teY.push(it.digit); });
-            }
-            splitData = { trX, trY, vaX, vaY, teX, teY };
-        }
-
-        function appendBpnnLog(msg) {
-            const box = document.getElementById('bpnn-log');
-            box.textContent += '\n' + msg;
-            box.scrollTop = box.scrollHeight;
-        }
-
-        function startTraining() {
-            if (isTraining) return;
-            if (generatedImages.length < 50) { alert('Generate dataset dulu minimal 50 pola!'); return; }
-
-            const alpha = parseFloat(document.getElementById('bpnn-alpha').value) || 0.8;
-            const momentum = parseFloat(document.getElementById('bpnn-momentum').value) || 0.85;
-            const targetMse = parseFloat(document.getElementById('bpnn-target-mse').value) || 0.000001;
-
-            prepareSplitData();
-            model.initNguyenWidrow();
-            histEpoch = []; histMseTr = []; histMseVa = []; histAccTr = []; histAccVa = [];
-
-            isTraining = true;
-            stopFlag = false;
-            document.getElementById('btn-train').disabled = true;
-            document.getElementById('btn-stop').disabled = false;
-            document.getElementById('bpnn-log').textContent =
-                `Memulai Fast Training (Epoch ∞) | Data: ${splitData.trX.length} Latih, ${splitData.vaX.length} Val, ${splitData.teX.length} Uji\nTarget Set Point MSE <= ${targetMse.toFixed(7)} (${(targetMse * 100).toFixed(4)}%)`;
-
-            let ep = 0;
-
-            function step() {
-                if (stopFlag) { finishTraining('Dihentikan manual', targetMse); return; }
-
-                // Jalankan beberapa epoch per frame agar sangat cepat
-                const epochsPerTick = splitData.trX.length > 1500 ? 1 : 3;
-                let reached = false;
-                let lastTr, lastVa;
-
-                for (let k = 0; k < epochsPerTick; k++) {
-                    ep++;
-                    model.trainEpoch(splitData.trX, splitData.trY, alpha, momentum, 32);
-                    lastTr = model.evaluate(splitData.trX, splitData.trY);
-                    lastVa = model.evaluate(splitData.vaX, splitData.vaY);
-
-                    histEpoch.push(ep);
-                    histMseTr.push(lastTr.mse);
-                    histMseVa.push(lastVa.mse);
-                    histAccTr.push(lastTr.acc * 100);
-                    histAccVa.push(lastVa.acc * 100);
-
-                    if (lastTr.mse <= targetMse) { reached = true; break; }
-                }
-
-                setStatus(`Epoch ${ep} (∞) | MSE Latih: ${lastTr.mse.toFixed(7)} | Val: ${lastVa.mse.toFixed(7)} | Acc: ${(lastTr.acc * 100).toFixed(1)}%`);
-                if (ep <= 3 || ep % 15 === 0 || reached) {
-                    appendBpnnLog(`Epoch ${String(ep).padStart(4)} | MSE_tr=${lastTr.mse.toFixed(7)} | MSE_va=${lastVa.mse.toFixed(7)} | Acc_tr=${(lastTr.acc * 100).toFixed(1)}%`);
-                    drawTrainingCharts(targetMse);
-                }
-
-                if (reached) {
-                    finishTraining(`Set Point MSE <= ${targetMse.toFixed(7)} tercapai`, targetMse);
-                } else {
-                    setTimeout(step, 0);
-                }
-            }
-            setTimeout(step, 0);
-        }
-
-        function stopTraining() { stopFlag = true; }
-
-        function finishTraining(reason, targetMse) {
-            isTraining = false;
-            document.getElementById('btn-train').disabled = false;
-            document.getElementById('btn-stop').disabled = true;
-
-            drawTrainingCharts(targetMse);
-            const tr = model.evaluate(splitData.trX, splitData.trY);
-            const va = model.evaluate(splitData.vaX, splitData.vaY);
-            const te = model.evaluate(splitData.teX, splitData.teY);
-
-            renderConfusionMatrix(te.cm);
-            const gap = (tr.acc - va.acc) * 100;
-            const diag = tr.acc < 0.7 ? 'UNDERFITTING' : (gap > 12 ? 'TERINDIKASI OVERFITTING' : 'GENERALISASI BAIK / OPTIMAL');
-
-            appendBpnnLog(
-                `\nSELESAI (${reason}) pada Epoch ${histEpoch.length}\n` +
-                `Latih : MSE=${tr.mse.toFixed(7)} | Acc=${(tr.acc * 100).toFixed(2)}%\n` +
-                `Val   : MSE=${va.mse.toFixed(7)} | Acc=${(va.acc * 100).toFixed(2)}%\n` +
-                `Uji   : MSE=${te.mse.toFixed(7)} | Acc=${(te.acc * 100).toFixed(2)}%\n` +
-                `Status: ${diag} (Gap Latih-Val: ${gap.toFixed(2)}%)`
-            );
-            setStatus(`Selesai (${reason}) | Akurasi Uji: ${(te.acc * 100).toFixed(2)}%`);
-            setProgress(100);
-        }
-
-        function drawLineChart(canvasId, series, yMaxFixed = null, refLine = null) {
-            const c = document.getElementById(canvasId);
-            const ctx = c.getContext('2d');
-            const W = c.width, H = c.height;
-            const pad = { l: 48, r: 16, t: 18, b: 28 };
-
-            ctx.fillStyle = '#0c0c16';
-            ctx.fillRect(0, 0, W, H);
-
-            const n = histEpoch.length;
-            if (n === 0) return;
-
-            let yMax = yMaxFixed ?? Math.max(...series[0].data, ...series[1].data, 0.01);
-            const yMin = 0;
-
-            // Grid
-            ctx.strokeStyle = '#222238';
-            ctx.lineWidth = 1;
-            ctx.fillStyle = '#8892b0';
-            ctx.font = '10px Consolas';
-            for (let g = 0; g <= 4; g++) {
-                const y = pad.t + (H - pad.t - pad.b) * (g / 4);
-                ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
-                const val = yMax * (1 - g / 4);
-                ctx.fillText(yMaxFixed ? val.toFixed(0) + '%' : val.toFixed(4), 4, y + 3);
-            }
-
-            if (refLine !== null && yMax > 0) {
-                const ry = pad.t + (H - pad.t - pad.b) * (1 - Math.min(refLine / yMax, 1));
-                ctx.strokeStyle = '#94a3b8';
-                ctx.setLineDash([4, 4]);
-                ctx.beginPath(); ctx.moveTo(pad.l, ry); ctx.lineTo(W - pad.r, ry); ctx.stroke();
-                ctx.setLineDash([]);
-            }
-
-            series.forEach(s => {
-                ctx.strokeStyle = s.color;
-                ctx.lineWidth = 2;
-                if (s.dashed) ctx.setLineDash([5, 3]);
-                ctx.beginPath();
-                for (let i = 0; i < n; i++) {
-                    const x = pad.l + (n === 1 ? 0 : (i / (n - 1)) * (W - pad.l - pad.r));
-                    const y = pad.t + (1 - Math.min(Math.max(s.data[i], yMin) / yMax, 1)) * (H - pad.t - pad.b);
-                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-                ctx.setLineDash([]);
-            });
-
-            // Legend
-            ctx.font = '11px Segoe UI';
-            series.forEach((s, idx) => {
-                ctx.fillStyle = s.color;
-                ctx.fillText('■ ' + s.label, pad.l + idx * 120, H - 8);
-            });
-        }
-
-        function drawTrainingCharts(targetMse) {
-            drawLineChart('chart-mse', [
-                { label: 'MSE Latih', data: histMseTr, color: '#ff6b6b', dashed: false },
-                { label: 'MSE Validasi', data: histMseVa, color: '#ffd166', dashed: true }
-            ], null, targetMse);
-
-            drawLineChart('chart-acc', [
-                { label: 'Acc Latih', data: histAccTr, color: '#4ade80', dashed: false },
-                { label: 'Acc Validasi', data: histAccVa, color: '#60a5fa', dashed: true }
-            ], 100, null);
-        }
-
-        function renderConfusionMatrix(cm) {
-            let maxV = 1;
-            cm.forEach(r => r.forEach(v => { if (v > maxV) maxV = v; }));
-
-            let html = '<table class="cm-table"><thead><tr><th>A\\P</th>';
-            for (let d = 0; d < 10; d++) html += `<th>${d}</th>`;
-            html += '</tr></thead><tbody>';
-            for (let i = 0; i < 10; i++) {
-                html += `<tr><th>${i}</th>`;
-                for (let j = 0; j < 10; j++) {
-                    const v = cm[i][j];
-                    const alpha = v > 0 ? (0.15 + 0.75 * (v / maxV)) : 0;
-                    const bg = i === j ? `rgba(233, 69, 96, ${alpha})` : `rgba(83, 216, 251, ${alpha * 0.7})`;
-                    html += `<td style="background:${bg};color:${v > 0 ? '#fff' : '#555'}">${v}</td>`;
-                }
-                html += '</tr>';
-            }
-            html += '</tbody></table>';
-            document.getElementById('cm-container').innerHTML = html;
-        }
-
-        // =====================================================================
-        //  9. KANVAS GAMBAR INTERAKTIF & PREDIKSI
-        // =====================================================================
-        const drawCanvas = document.getElementById('draw-canvas');
-        const drawCtx = drawCanvas.getContext('2d', { willReadFrequently: true });
-        let isDrawing = false;
-        let lastPt = null;
-
-        function clearDrawCanvas() {
-            drawCtx.fillStyle = '#000';
-            drawCtx.fillRect(0, 0, 28, 28);
-            document.getElementById('pred-result').textContent = 'Hasil: -';
-            renderProbBars(new Array(10).fill(0));
-        }
-
-        function getCanvasPoint(e) {
-            const rect = drawCanvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return {
-                x: Math.floor(((clientX - rect.left) / rect.width) * 28),
-                y: Math.floor(((clientY - rect.top) / rect.height) * 28)
             };
+
+            const startDraw = (e) => {
+                isDrawing = true;
+                const pos = getPos(e);
+                lastX = pos.x; lastY = pos.y;
+                drawStroke(pos.x, pos.y);
+            };
+
+            const moveDraw = (e) => {
+                if (!isDrawing) return;
+                const pos = getPos(e);
+                drawStroke(pos.x, pos.y, lastX, lastY);
+                lastX = pos.x; lastY = pos.y;
+                if (e.touches) e.preventDefault();
+            };
+
+            const stopDraw = () => { isDrawing = false; };
+
+            drawCanvas.addEventListener('mousedown', startDraw);
+            drawCanvas.addEventListener('mousemove', moveDraw);
+            window.addEventListener('mouseup', stopDraw);
+
+            drawCanvas.addEventListener('touchstart', startDraw, { passive: false });
+            drawCanvas.addEventListener('touchmove', moveDraw, { passive: false });
+            drawCanvas.addEventListener('touchend', stopDraw);
         }
 
-        function drawStroke(p1, p2) {
-            const size = parseInt(document.getElementById('brush-size').value) || 2;
-            drawCtx.strokeStyle = '#fff';
-            drawCtx.lineWidth = size;
+        function drawStroke(x, y, fromX = x, fromY = y) {
+            const brushSize = parseInt(document.getElementById('brushSize').value) * 10;
+            drawCtx.strokeStyle = drawMode === 'draw' ? '#ffffff' : '#000000';
+            drawCtx.fillStyle = drawMode === 'draw' ? '#ffffff' : '#000000';
+            drawCtx.lineWidth = brushSize;
             drawCtx.lineCap = 'round';
+            drawCtx.lineJoin = 'round';
+
             drawCtx.beginPath();
-            drawCtx.moveTo(p1.x + 0.5, p1.y + 0.5);
-            drawCtx.lineTo(p2.x + 0.5, p2.y + 0.5);
+            drawCtx.moveTo(fromX, fromY);
+            drawCtx.lineTo(x, y);
             drawCtx.stroke();
         }
 
-        drawCanvas.addEventListener('pointerdown', e => {
-            isDrawing = true;
-            lastPt = getCanvasPoint(e);
-            drawStroke(lastPt, lastPt);
-        });
-        drawCanvas.addEventListener('pointermove', e => {
-            if (!isDrawing) return;
-            const pt = getCanvasPoint(e);
-            drawStroke(lastPt, pt);
-            lastPt = pt;
-        });
-        window.addEventListener('pointerup', () => { isDrawing = false; lastPt = null; });
-
-        function renderProbBars(probs) {
-            const container = document.getElementById('prob-bars');
-            let bestJ = 0, bestVal = -1;
-            for (let i = 0; i < 10; i++) if (probs[i] > bestVal) { bestVal = probs[i]; bestJ = i; }
-
-            container.innerHTML = '';
-            for (let i = 0; i < 10; i++) {
-                const pct = Math.max(0, Math.min(100, probs[i] * 100));
-                const col = (i === bestJ && bestVal > 0) ? '#e94560' : '#3a4a68';
-                container.innerHTML += `
-            <div class="bar-col">
-                <div class="bar" style="background:${col};height:${pct * 0.8}%"></div>
-                <span class="bar-label">${i}</span>
-            </div>`;
-            }
+        function setDrawMode(mode) {
+            drawMode = mode;
+            document.getElementById('btnModeDraw').className = mode === 'draw'
+                ? 'px-2 py-1 bg-brand-maroon text-white rounded font-medium'
+                : 'px-2 py-1 bg-gray-800 text-gray-300 hover:text-white rounded';
+            document.getElementById('btnModeErase').className = mode === 'erase'
+                ? 'px-2 py-1 bg-brand-maroon text-white rounded font-medium'
+                : 'px-2 py-1 bg-gray-800 text-gray-300 hover:text-white rounded';
         }
 
-        function predictCanvas(actualLabel = null, allowCenter = true) {
-            const data = drawCtx.getImageData(0, 0, 28, 28).data;
-            let pixels = new Uint8Array(784);
-            let anyOn = false;
-            for (let i = 0; i < 784; i++) {
-                pixels[i] = data[i * 4] > 60 ? 1 : 0;
-                if (pixels[i]) anyOn = true;
-            }
+        function clearCanvas() {
+            drawCtx.fillStyle = '#000000';
+            drawCtx.fillRect(0, 0, 280, 280);
+            updateProbabilityBars(new Float64Array(10), -1, 0);
+        }
 
-            if (allowCenter && anyOn && document.getElementById('chk-autocenter').checked) {
-                pixels = centerBinaryPixels(pixels);
-                drawPixelsToCanvas(pixels, drawCanvas);
-            }
-
-            const out = model.forwardOne(pixels)[model.W.length];
-            let bestJ = 0, bestVal = out[0];
-            for (let j = 1; j < 10; j++) if (out[j] > bestVal) { bestVal = out[j]; bestJ = j; }
-
-            if (actualLabel !== null) {
-                document.getElementById('pred-result').innerHTML =
-                    `Prediksi: <span style="color:#53d8fb">${bestJ}</span> (Asli: ${actualLabel})`;
+        function getCanvasVector() {
+            const autoCenter = document.getElementById('chkAutoCenter').checked;
+            if (autoCenter) {
+                return autoCenterAndCrop(drawCtx, 280, 280);
             } else {
-                document.getElementById('pred-result').innerHTML =
-                    `Hasil: <span style="color:#ff6b81">${bestJ}</span> (${(bestVal * 100).toFixed(1)}%)`;
+                const pCanvas = document.getElementById('procCanvas');
+                const pCtx = pCanvas.getContext('2d');
+                pCtx.fillStyle = '#000000';
+                pCtx.fillRect(0, 0, 28, 28);
+                pCtx.drawImage(drawCanvas, 0, 0, 28, 28);
+                const imgData = pCtx.getImageData(0, 0, 28, 28).data;
+                const vec = new Float64Array(784);
+                for (let i = 0; i < 784; i++) {
+                    vec[i] = imgData[i * 4] > 50 ? 1.0 : 0.0;
+                }
+                return vec;
             }
-            renderProbBars(out);
         }
 
-        function testRandomSample() {
-            const pool = (splitData && splitData.teX.length > 0) ? splitData.teX : generatedImages.map(g => g.pixels);
-            const labels = (splitData && splitData.teY.length > 0) ? splitData.teY : generatedImages.map(g => g.digit);
-            if (pool.length === 0) return;
-            const idx = Math.floor(Math.random() * pool.length);
-            drawPixelsToCanvas(pool[idx], drawCanvas);
-            predictCanvas(labels[idx], false);
+        function predictCanvas() {
+            if (!bpnn) return;
+            const inputVec = getCanvasVector();
+            const probs = bpnn.forward(inputVec);
+
+            let maxIdx = 0, maxVal = probs[0];
+            for (let k = 1; k < 10; k++) {
+                if (probs[k] > maxVal) {
+                    maxVal = probs[k];
+                    maxIdx = k;
+                }
+            }
+
+            document.getElementById('predDigit').textContent = maxIdx;
+            document.getElementById('predConf').textContent = (maxVal * 100).toFixed(1) + '%';
+            updateProbabilityBars(probs, maxIdx, maxVal);
+
+            drawNNArchitecture(inputVec, bpnn.a1, bpnn.a2, probs);
         }
 
-        // =====================================================================
-        //  10. HELPERS & INIT
-        // =====================================================================
-        function setStatus(text) { document.getElementById('status-text').textContent = text; }
-        function setProgress(pct) { document.getElementById('progress-fill').style.width = pct + '%'; }
+        function loadRandomTestSample() {
+            if (!dataset.test.length) return;
+            const sample = dataset.test[Math.floor(Math.random() * dataset.test.length)];
 
-        window.addEventListener('load', () => {
-            clearDrawCanvas();
-            rng = mulberry32(42);
-            generateAll();
-        });
+            drawCtx.fillStyle = '#000000';
+            drawCtx.fillRect(0, 0, 280, 280);
+
+            for (let y = 0; y < 28; y++) {
+                for (let x = 0; x < 28; x++) {
+                    if (sample.input[y * 28 + x] > 0.5) {
+                        drawCtx.fillStyle = '#ffffff';
+                        drawCtx.fillRect(x * 10, y * 10, 10, 10);
+                    }
+                }
+            }
+            predictCanvas();
+        }
+
+        function loadUserImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const img = new Image();
+            img.onload = () => {
+                drawCtx.fillStyle = '#000000';
+                drawCtx.fillRect(0, 0, 280, 280);
+
+                const scale = Math.min(280 / img.width, 280 / img.height);
+                const w = img.width * scale;
+                const h = img.height * scale;
+                const x = (280 - w) / 2;
+                const y = (280 - h) / 2;
+                drawCtx.drawImage(img, x, y, w, h);
+
+                predictCanvas();
+            };
+            img.src = URL.createObjectURL(file);
+        }
+
+        function updateProbabilityBars(probs, predictedDigit, maxConf) {
+            const container = document.getElementById('probBarsContainer');
+            container.innerHTML = '';
+
+            for (let d = 0; d < 10; d++) {
+                const val = probs[d] || 0;
+                const pct = (val * 100).toFixed(1);
+                const isMax = d === predictedDigit;
+
+                const barRow = document.createElement('div');
+                barRow.className = 'flex items-center space-x-2 text-[11px] font-mono';
+                barRow.innerHTML = `
+          <span class="w-3 text-right font-bold ${isMax ? 'text-brand-accent' : 'text-gray-400'}">${d}</span>
+          <div class="flex-1 bg-brand-dark h-2 rounded-full overflow-hidden border border-gray-800">
+            <div class="h-full rounded-full ${isMax ? 'bg-gradient-to-r from-brand-maroon to-brand-crimson' : 'bg-gray-700'}" style="width: ${pct}%"></div>
+          </div>
+          <span class="w-10 text-right ${isMax ? 'text-brand-accent font-bold' : 'text-gray-500'}">${pct}%</span>
+        `;
+                container.appendChild(barRow);
+            }
+        }
+
+        /* ==========================================================================
+           5. NN ARCHITECTURE CANVAS VISUALIZER
+           ========================================================================== */
+        function drawNNArchitecture(inputs = null, a1 = null, a2 = null, outputs = null) {
+            const canvas = document.getElementById('nnCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const layerX = [w * 0.12, w * 0.38, w * 0.64, w * 0.88];
+            const layerNodes = [17, 16, 16, 10];
+
+            const getPosY = (layerIdx, nodeIdx, totalCount) => {
+                const spacing = (h - 20) / (totalCount + 1);
+                return 10 + (nodeIdx + 1) * spacing;
+            };
+
+            ctx.globalCompositeOperation = 'lighter';
+            for (let l = 0; l < 3; l++) {
+                const countCurrent = layerNodes[l];
+                const countNext = layerNodes[l + 1];
+
+                for (let i = 0; i < countCurrent; i++) {
+                    if (l === 0 && i === 8) continue;
+                    const y1 = getPosY(l, i, countCurrent);
+
+                    for (let j = 0; j < countNext; j++) {
+                        if (l === 0 && Math.random() > 0.3) continue;
+
+                        const y2 = getPosY(l + 1, j, countNext);
+                        const wVal = (bpnn && l === 0) ? (bpnn.W1[i < 8 ? i : i + 767]?.[j] || 0) :
+                            (bpnn && l === 1) ? (bpnn.W2[i]?.[j] || 0) :
+                                (bpnn && l === 2) ? (bpnn.W3[i]?.[j] || 0) : (Math.random() - 0.5);
+
+                        ctx.beginPath();
+                        ctx.moveTo(layerX[l], y1);
+                        ctx.lineTo(layerX[l + 1], y2);
+                        ctx.strokeStyle = wVal > 0 ? `rgba(255, 107, 107, ${Math.min(0.6, Math.abs(wVal))})`
+                            : `rgba(59, 130, 246, ${Math.min(0.6, Math.abs(wVal))})`;
+                        ctx.lineWidth = Math.min(2, Math.abs(wVal) * 1.5 + 0.3);
+                        ctx.stroke();
+                    }
+                }
+            }
+            ctx.globalCompositeOperation = 'source-over';
+
+            for (let l = 0; l < 4; l++) {
+                const count = layerNodes[l];
+                for (let i = 0; i < count; i++) {
+                    const x = layerX[l];
+                    const y = getPosY(l, i, count);
+
+                    if (l === 0 && i === 8) {
+                        ctx.fillStyle = '#9ca3af';
+                        ctx.font = 'bold 10px monospace';
+                        ctx.fillText('...', x - 6, y + 3);
+                        continue;
+                    }
+
+                    let act = 0;
+                    if (l === 0 && inputs) {
+                        const actualInputIdx = i < 8 ? i * 20 : 700 + (i - 9) * 10;
+                        act = inputs[actualInputIdx] || 0;
+                    } else if (l === 1 && a1) act = a1[i] || 0;
+                    else if (l === 2 && a2) act = a2[i] || 0;
+                    else if (l === 3 && outputs) act = outputs[i] || 0;
+
+                    const radius = l === 3 ? 6 : 4.5;
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+
+                    if (act > 0.1) {
+                        ctx.fillStyle = `rgba(255, 77, 79, ${0.4 + act * 0.6})`;
+                        ctx.shadowColor = '#ff4d4f';
+                        ctx.shadowBlur = 8;
+                    } else {
+                        ctx.fillStyle = '#20202a';
+                        ctx.shadowBlur = 0;
+                    }
+
+                    ctx.strokeStyle = l === 3 ? '#ff6b6b' : '#8b1e24';
+                    ctx.lineWidth = 1.5;
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+
+                    if (l === 3) {
+                        ctx.fillStyle = '#e5e7eb';
+                        ctx.font = '10px monospace';
+                        ctx.fillText(i.toString(), x + 10, y + 3);
+                    }
+                }
+            }
+        }
+
+        /* ==========================================================================
+           6. CHARTS & EVALUATION RENDERERS
+           ========================================================================== */
+        function initCharts() {
+            const chartConfigBase = {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                plugins: { legend: { labels: { color: '#9ca3af', font: { size: 10 } } } },
+                scales: {
+                    x: { ticks: { color: '#6b7280', font: { size: 9 } }, grid: { color: '#1f2937' } },
+                    y: { ticks: { color: '#6b7280', font: { size: 9 } }, grid: { color: '#1f2937' } }
+                }
+            };
+
+            const ctxMSE = document.getElementById('chartMSE').getContext('2d');
+            chartMSEInstance = new Chart(ctxMSE, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Train MSE', data: [], borderColor: '#ff4d4f', borderWidth: 1.5, pointRadius: 0 },
+                        { label: 'Val MSE', data: [], borderColor: '#3b82f6', borderWidth: 1.5, pointRadius: 0 },
+                        { label: 'Target MSE', data: [], borderColor: '#a3e635', borderWidth: 1, borderDash: [4, 4], pointRadius: 0 }
+                    ]
+                },
+                options: chartConfigBase
+            });
+
+            const ctxAcc = document.getElementById('chartAcc').getContext('2d');
+            chartAccInstance = new Chart(ctxAcc, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Train Acc (%)', data: [], borderColor: '#ff6b6b', borderWidth: 1.5, pointRadius: 0 },
+                        { label: 'Val Acc (%)', data: [], borderColor: '#10b981', borderWidth: 1.5, pointRadius: 0 }
+                    ]
+                },
+                options: chartConfigBase
+            });
+        }
+
+        function resetCharts() {
+            chartMSEInstance.data.labels = [];
+            chartMSEInstance.data.datasets[0].data = [];
+            chartMSEInstance.data.datasets[1].data = [];
+            chartMSEInstance.data.datasets[2].data = [];
+            chartMSEInstance.update();
+
+            chartAccInstance.data.labels = [];
+            chartAccInstance.data.datasets[0].data = [];
+            chartAccInstance.data.datasets[1].data = [];
+            chartAccInstance.update();
+        }
+
+        function updateCharts(epoch, trainMSE, valMSE, targetMSE, trainAcc, valAcc) {
+            chartMSEInstance.data.labels.push(epoch);
+            chartMSEInstance.data.datasets[0].data.push(trainMSE);
+            chartMSEInstance.data.datasets[1].data.push(valMSE);
+            chartMSEInstance.data.datasets[2].data.push(targetMSE);
+            chartMSEInstance.update('none');
+
+            chartAccInstance.data.labels.push(epoch);
+            chartAccInstance.data.datasets[0].data.push(trainAcc);
+            chartAccInstance.data.datasets[1].data.push(valAcc);
+            chartAccInstance.update('none');
+
+            document.getElementById('txtCurrentMSE').textContent = `MSE: ${trainMSE.toFixed(7)}`;
+            document.getElementById('txtCurrentAcc').textContent = `Acc: ${trainAcc.toFixed(1)}%`;
+        }
+
+        /* ==========================================================================
+           7. TRAINING LOOP CONTROL (EPOCH ∞ + FAST SET POINT MSE)
+           ========================================================================== */
+        async function startTraining() {
+            if (isTraining) return;
+
+            const alpha = parseFloat(document.getElementById('inputAlpha').value);
+            const momentum = parseFloat(document.getElementById('inputMomentum').value);
+            const targetMSE = parseFloat(document.getElementById('inputTargetMSE').value);
+
+            bpnn = new NeuralNetwork();
+            resetCharts();
+
+            isTraining = true;
+            stopRequested = false;
+
+            document.getElementById('btnTrain').disabled = true;
+            document.getElementById('btnTrain').classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('btnStop').disabled = false;
+            document.getElementById('btnStop').classList.remove('text-gray-500', 'cursor-not-allowed');
+            document.getElementById('btnStop').classList.add('bg-brand-crimson', 'text-white', 'hover:brightness-110');
+
+            document.getElementById('txtStatusLabel').textContent = 'Status: Pelatihan Berlangsung (Epoch ∞ -> Set Point MSE)...';
+            logMsg(`Memulai pelatihan BPNN (Epoch ∞): Alpha=${alpha}, Momentum=${momentum}, Target MSE=${targetMSE.toFixed(7)} (${(targetMSE * 100).toFixed(4)}%)`);
+
+            let currentEpoch = 0;
+            let finalTrainEval = null;
+
+            const trainChunk = () => {
+                if (stopRequested) {
+                    finishTraining(currentEpoch, 'Dihentikan manual', finalTrainEval);
+                    return;
+                }
+
+                // Jalankan beberapa epoch mini-batch per tick agar melesat cepat ke Set Point MSE
+                const burst = dataset.train.length > 1500 ? 2 : 5;
+                let converged = false;
+                let valEval = null;
+
+                for (let b = 0; b < burst; b++) {
+                    currentEpoch++;
+                    bpnn.trainEpochBatch(dataset.train, alpha, momentum, 32);
+
+                    finalTrainEval = bpnn.evaluate(dataset.train);
+                    valEval = bpnn.evaluate(dataset.val);
+
+                    const updatePlot = (currentEpoch === 1 || currentEpoch % 20 === 0 || finalTrainEval.mse <= targetMSE);
+                    if (updatePlot) {
+                        updateCharts(currentEpoch, finalTrainEval.mse, valEval.mse, targetMSE, finalTrainEval.accuracy, valEval.accuracy);
+                        logMsg(`Epoch ${currentEpoch} (∞) -> MSE_tr=${finalTrainEval.mse.toFixed(7)} | MSE_va=${valEval.mse.toFixed(7)} | Acc_tr=${finalTrainEval.accuracy.toFixed(1)}% | Acc_va=${valEval.accuracy.toFixed(1)}%`);
+                        drawNNArchitecture();
+                    }
+
+                    if (finalTrainEval.mse <= targetMSE) {
+                        converged = true;
+                        break;
+                    }
+                }
+
+                // Progress bar berdenyut untuk mode Epoch ∞
+                const pulsePct = Math.min(99, Math.max(5, (1 - Math.min(1, finalTrainEval.mse / 0.1)) * 100));
+                document.getElementById('progressBar').style.width = `${pulsePct.toFixed(0)}%`;
+                document.getElementById('txtEpochProgress').textContent = `Epoch: ${currentEpoch} (∞) | MSE: ${finalTrainEval.mse.toFixed(7)}`;
+
+                if (converged) {
+                    document.getElementById('progressBar').style.width = '100%';
+                    const reason = `Target MSE <= ${targetMSE.toFixed(7)} (${(targetMSE * 100).toFixed(4)}%) tercapai`;
+                    logMsg(`[CONVERGED] ${reason} pada epoch ${currentEpoch}!`);
+                    finishTraining(currentEpoch, reason, finalTrainEval);
+                    return;
+                }
+
+                setTimeout(trainChunk, 0);
+            };
+
+            trainChunk();
+        }
+
+        function stopTraining() {
+            if (!isTraining) return;
+            stopRequested = true;
+            logMsg('[STOP] Pelatihan dihentikan oleh pengguna.');
+        }
+
+        function finishTraining(epoch, reason, finalTrainEval) {
+            isTraining = false;
+            document.getElementById('btnTrain').disabled = false;
+            document.getElementById('btnTrain').classList.remove('opacity-50', 'cursor-not-allowed');
+            document.getElementById('btnStop').disabled = true;
+            document.getElementById('btnStop').className = 'px-3 py-1.5 bg-gray-800 text-gray-500 font-semibold rounded-md text-xs cursor-not-allowed flex items-center gap-1 transition';
+
+            document.getElementById('txtStatusLabel').textContent = `Status: Selesai (${reason})`;
+            logMsg(`Pelatihan selesai pada epoch ${epoch} (${reason}).`);
+
+            runEvaluationTab();
+            predictCanvas();
+        }
+
+        /* ==========================================================================
+           8. EVALUATION & OVERFITTING DIAGNOSIS (TAB 2)
+           ========================================================================== */
+        function runEvaluationTab() {
+            if (!bpnn || !dataset.test.length) return;
+
+            const trainEval = bpnn.evaluate(dataset.train);
+            const valEval = bpnn.evaluate(dataset.val);
+            const testEval = bpnn.evaluate(dataset.test);
+
+            const matrix = Array.from({ length: 10 }, () => new Array(10).fill(0));
+            const perDigitCorrect = new Array(10).fill(0);
+            const perDigitTotal = new Array(10).fill(0);
+
+            for (let res of testEval.predictions) {
+                matrix[res.pred][res.actual]++;
+                perDigitTotal[res.actual]++;
+                if (res.pred === res.actual) perDigitCorrect[res.actual]++;
+            }
+
+            const cmTbody = document.getElementById('cmTbody');
+            cmTbody.innerHTML = '';
+            for (let p = 0; p < 10; p++) {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-gray-800/50';
+                tr.innerHTML = `<td class="p-1.5 font-bold text-gray-300 bg-brand-dark/40">${p}</td>`;
+
+                for (let a = 0; a < 10; a++) {
+                    const val = matrix[p][a];
+                    const isDiag = p === a;
+                    let bgStyle = 'bg-brand-dark/20 text-gray-400';
+                    if (val > 0) {
+                        bgStyle = isDiag ? 'bg-emerald-950/80 text-emerald-400 font-bold border border-emerald-800/50'
+                            : 'bg-red-950/80 text-brand-accent font-bold border border-red-900/50';
+                    }
+                    tr.innerHTML += `<td class="p-1.5 ${bgStyle}">${val}</td>`;
+                }
+                cmTbody.appendChild(tr);
+            }
+
+            document.getElementById('statTrainMetrics').textContent = `${trainEval.accuracy.toFixed(1)}% / ${trainEval.mse.toFixed(7)}`;
+            document.getElementById('statValMetrics').textContent = `${valEval.accuracy.toFixed(1)}% / ${valEval.mse.toFixed(7)}`;
+            document.getElementById('statTestMetrics').textContent = `${testEval.accuracy.toFixed(1)}% / ${testEval.mse.toFixed(7)}`;
+
+            const badge = document.getElementById('badgeDiagnosis');
+            const detailsBox = document.getElementById('boxDiagnosisDetails');
+
+            const accDiff = trainEval.accuracy - valEval.accuracy;
+            let statusText = '';
+            let badgeClass = '';
+
+            if (trainEval.accuracy < 70) {
+                statusText = '⚠️ <strong>Underfitting Terdeteksi:</strong> Akurasi data latih masih rendah (< 70%). Disarankan melanjutkan pelatihan atau menyesuaikan Learning Rate (α).';
+                badgeClass = 'text-amber-400 font-bold';
+                badge.textContent = 'Underfitting';
+            } else if (accDiff > 12 || valEval.mse > trainEval.mse * 2.5 && valEval.mse > 0.02) {
+                statusText = '⚠️ <strong>Overfitting Terdeteksi:</strong> Terdapat selisih akurasi yang signifikan antara Data Latih dan Data Validasi. Model terlalu menghafal data latih.';
+                badgeClass = 'text-brand-accent font-bold';
+                badge.textContent = 'Overfitting';
+            } else {
+                statusText = '✅ <strong>Model Optimal (Good Fit):</strong> Performa generalisasi pada Data Latih, Validasi, dan Pengujian sangat seimbang dengan selisih yang minim.';
+                badgeClass = 'text-emerald-400 font-bold';
+                badge.textContent = 'Optimal (Good Fit)';
+            }
+
+            badge.className = `text-xs font-mono ${badgeClass}`;
+            detailsBox.innerHTML = `
+        <p>${statusText}</p>
+        <p class="text-[11px] text-gray-400 mt-2">
+- Evaluasi Data Pengujian (10%): Akurasi <strong>${testEval.accuracy.toFixed(2)}%</strong> dengan Mean Squared Error <strong>${testEval.mse.toFixed(7)}</strong>.<br>
+- Total Sampel Diuji: <strong>${dataset.test.length} pola</strong>.
+        </p>
+      `;
+
+            const gridPerDigit = document.getElementById('gridPerDigitAcc');
+            gridPerDigit.innerHTML = '';
+            for (let d = 0; d < 10; d++) {
+                const accD = perDigitTotal[d] > 0 ? ((perDigitCorrect[d] / perDigitTotal[d]) * 100).toFixed(0) : 0;
+                const col = document.createElement('div');
+                col.className = 'bg-brand-dark p-1.5 rounded border border-gray-800 flex flex-col items-center';
+                col.innerHTML = `
+          <span class="text-gray-400 text-[10px]">Angka ${d}</span>
+          <span class="font-bold ${accD >= 80 ? 'text-emerald-400' : 'text-brand-accent'}">${accD}%</span>
+        `;
+                gridPerDigit.appendChild(col);
+            }
+        }
+
+        /* ==========================================================================
+           9. DATASET GALLERY RENDERER (TAB 3)
+           ========================================================================== */
+        function renderDatasetGallery() {
+            const grid = document.getElementById('datasetGalleryGrid');
+            grid.innerHTML = '';
+
+            for (let digit = 0; digit <= 9; digit++) {
+                const samplesForDigit = dataset.train.filter(s => s.label === digit).slice(0, 2);
+
+                for (let idx = 0; idx < samplesForDigit.length; idx++) {
+                    const sample = samplesForDigit[idx];
+                    const card = document.createElement('div');
+                    card.className = 'bg-brand-dark p-2 rounded-lg border border-gray-800 flex flex-col items-center space-y-1.5 hover:border-brand-maroon transition';
+
+                    const cvs = document.createElement('canvas');
+                    cvs.width = 56; cvs.height = 56;
+                    cvs.className = 'pixelated rounded bg-black border border-gray-800';
+                    const cCtx = cvs.getContext('2d');
+
+                    cCtx.fillStyle = '#000000';
+                    cCtx.fillRect(0, 0, 56, 56);
+                    for (let y = 0; y < 28; y++) {
+                        for (let x = 0; x < 28; x++) {
+                            if (sample.input[y * 28 + x] > 0.5) {
+                                cCtx.fillStyle = '#ffffff';
+                                cCtx.fillRect(x * 2, y * 2, 2, 2);
+                            }
+                        }
+                    }
+
+                    card.appendChild(cvs);
+                    card.innerHTML += `<span class="text-[10px] font-mono text-gray-400">Digit ${digit} (#${idx + 1})</span>`;
+                    grid.appendChild(card);
+                }
+            }
+        }
+
+        function regenerateDataset() {
+            const inp = document.getElementById('inputSamplesPerDigit');
+            let count = parseInt(inp.value) || 100;
+            if (count < 50) {
+                count = 50;
+                inp.value = 50;
+            }
+            generateSyntheticDataset(count);
+            if (bpnn) runEvaluationTab();
+        }
+
+        /* ==========================================================================
+           10. SAVE / LOAD WEIGHTS & EXPORT
+           ========================================================================== */
+        function saveWeights() {
+            if (!bpnn) {
+                logMsg('[ERROR] Belum ada bobot model untuk disimpan.');
+                return;
+            }
+            const data = {
+                branding: 'medycompany Neural Engine',
+                author: 'Muhammad Rizki Rahmady (03041182429009)',
+                arch: '784-16-16-10',
+                W1: bpnn.W1.map(r => Array.from(r)), b1: Array.from(bpnn.b1),
+                W2: bpnn.W2.map(r => Array.from(r)), b2: Array.from(bpnn.b2),
+                W3: bpnn.W3.map(r => Array.from(r)), b3: Array.from(bpnn.b3)
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `BPNN_Weights_medycompany_${Date.now()}.json`;
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            logMsg('[EXPORT] Bobot model BPNN berhasil diunduh (JSON).');
+        }
+
+        function loadWeights(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    if (!bpnn) bpnn = new NeuralNetwork();
+
+                    bpnn.W1 = json.W1.map(r => new Float64Array(r)); bpnn.b1 = new Float64Array(json.b1);
+                    bpnn.W2 = json.W2.map(r => new Float64Array(r)); bpnn.b2 = new Float64Array(json.b2);
+                    bpnn.W3 = json.W3.map(r => new Float64Array(r)); bpnn.b3 = new Float64Array(json.b3);
+
+                    logMsg('[IMPORT] Bobot model BPNN berhasil dimuat dari file JSON!');
+                    drawNNArchitecture();
+                    predictCanvas();
+                    runEvaluationTab();
+                } catch (err) {
+                    logMsg('[ERROR] Gagal memuat file bobot JSON: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportChartsPNG() {
+            const cMSE = document.getElementById('chartMSE');
+            const imageURI = cMSE.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = imageURI;
+            a.download = `BPNN_MSE_Chart_${Date.now()}.png`;
+            a.click();
+            logMsg('[EXPORT] Grafik MSE berhasil diekspor sebagai gambar PNG.');
+        }
+
+        /* ==========================================================================
+           11. TAB NAVIGATION & INITIALIZATION
+           ========================================================================== */
+        function switchTab(tabId) {
+            ['tab1', 'tab2', 'tab3'].forEach(id => {
+                const el = document.getElementById(id);
+                const btn = document.getElementById('tabBtn' + id.slice(-1));
+                if (id === tabId) {
+                    el.classList.remove('hidden');
+                    btn.className = 'px-4 py-2.5 text-xs font-semibold border-b-2 border-brand-crimson text-brand-accent transition flex items-center gap-2';
+                } else {
+                    el.classList.add('hidden');
+                    btn.className = 'px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-200 transition flex items-center gap-2';
+                }
+            });
+
+            if (tabId === 'tab2') runEvaluationTab();
+        }
+
+        window.onload = function () {
+            initDrawCanvas();
+            initCharts();
+            bpnn = new NeuralNetwork();
+            generateSyntheticDataset(100);
+            drawNNArchitecture();
+            predictCanvas();
+
+            window.addEventListener('resize', () => {
+                drawNNArchitecture();
+            });
+
+            logMsg('[READY] Sistem BPNN Studio Pro (medycompany) siap digunakan.');
+        };
     </script>
-
 </body>
 
 </html>
