@@ -37,7 +37,7 @@ def pusatkan_citra_cv2(grid_biner):
     return biner.astype(md.float64)
 
 
-def buat_dataset_cv2(jumlah_per_angka=60, seed=42):
+def buat_dataset_cv2(jumlah_per_angka=100, seed=42):
     rng = md.random.default_rng(seed)
     X_list, y_list = [], []
     fonts = [
@@ -92,7 +92,7 @@ def buat_dataset_cv2(jumlah_per_angka=60, seed=42):
 
 
 # ==============================================================================
-# 2. ARSITEKTUR BPNN (784 - 16 - 16 - 10) + NGUYEN-WIDROW + MOMENTUM + L2
+# 2. ARSITEKTUR BPNN (784 - 16 - 16 - 10) + NGUYEN-WIDROW + MOMENTUM (FAST)
 # ==============================================================================
 class BPNNDigitRecognizer:
     def __init__(self, layers=(784, 16, 16, 10), seed=42):
@@ -131,7 +131,7 @@ class BPNNDigitRecognizer:
 
     @staticmethod
     def sigmoid_turunan(y):
-        return y * (1.0 - y)
+        return y * (1.0 - y) + 0.01
 
     def forward(self, X):
         aktivasi = [X]
@@ -141,24 +141,27 @@ class BPNNDigitRecognizer:
             aktivasi.append(a)
         return aktivasi
 
-    def train_step(self, X, Y, alpha=0.03, momentum=0.7, weight_decay=1e-4):
-        indeks = self.rng.permutation(len(X))
-        for idx in indeks:
-            x_i = X[idx : idx + 1]
-            y_i = Y[idx : idx + 1]
+    def train_step(self, X, Y, alpha=0.8, momentum=0.85, batch_size=32):
+        n = len(X)
+        indeks = self.rng.permutation(n)
+        for start in range(0, n, batch_size):
+            idx = indeks[start : start + batch_size]
+            x_b, y_b = X[idx], Y[idx]
 
-            aktivasi = self.forward(x_i)
-            error = y_i - aktivasi[-1]
+            aktivasi = self.forward(x_b)
+            error = y_b - aktivasi[-1]
 
             deltas = [error * self.sigmoid_turunan(aktivasi[-1])]
             for l in range(len(self.weights) - 1, 0, -1):
                 delta_h = (deltas[0] @ self.weights[l].T) * self.sigmoid_turunan(aktivasi[l])
                 deltas.insert(0, delta_h)
 
+            skala = alpha / len(idx)
             for l in range(len(self.weights)):
-                grad_w = aktivasi[l].T @ deltas[l] - weight_decay * self.weights[l]
-                self.vel_w[l] = alpha * grad_w + momentum * self.vel_w[l]
-                self.vel_b[l] = alpha * deltas[l] + momentum * self.vel_b[l]
+                grad_w = aktivasi[l].T @ deltas[l]
+                grad_b = md.sum(deltas[l], axis=0, keepdims=True)
+                self.vel_w[l] = skala * grad_w + momentum * self.vel_w[l]
+                self.vel_b[l] = skala * grad_b + momentum * self.vel_b[l]
                 self.weights[l] += self.vel_w[l]
                 self.biases[l] += self.vel_b[l]
 
@@ -237,22 +240,23 @@ class BPNNProDashboard:
         bar = tk.Frame(self.root, bg="#1d1d1d", padx=10, pady=8, highlightbackground="#333333", highlightthickness=1)
         bar.pack(side=tk.TOP, fill=tk.X)
 
-        def tambah_input(label_txt, default_val, width=6):
+        def tambah_input(label_txt, default_val, width=8):
             tk.Label(bar, text=label_txt, bg="#1d1d1d", fg="#cccccc", font=("Segoe UI", 9)).pack(side=tk.LEFT, padx=(8, 2))
             var = tk.StringVar(value=str(default_val))
             ent = tk.Entry(bar, textvariable=var, width=width, bg="#2c2c2c", fg="#ffffff", insertbackground="#ffffff", relief=tk.FLAT)
             ent.pack(side=tk.LEFT, padx=(0, 4))
             return var
 
-        self.var_alpha = tambah_input("Alpha (α):", 0.03, 5)
-        self.var_momentum = tambah_input("Momentum (μ):", 0.7, 5)
-        self.var_target_mse = tambah_input("Target MSE:", 0.005, 6)
-        self.var_max_epoch = tambah_input("Max Epoch:", 150, 5)
-        self.var_n_pola = tambah_input("Pola/Angka:", 60, 4)
+        self.var_alpha = tambah_input("Alpha (α):", 0.8, 5)
+        self.var_momentum = tambah_input("Momentum (μ):", 0.85, 5)
+        self.var_target_mse = tambah_input("Target MSE (0.0001%):", "0.000001", 9)
+        self.var_n_pola = tambah_input("Pola/Angka (≥50):", 100, 5)
+
+        tk.Label(bar, text="Epoch: ∞", bg="#1d1d1d", fg="#ff6b6b", font=("Segoe UI", 9, "bold")).pack(side=tk.LEFT, padx=(6, 4))
 
         btn_cfg = {"font": ("Segoe UI", 9, "bold"), "relief": tk.FLAT, "padx": 10, "pady": 3}
         self.btn_latih = tk.Button(bar, text="▶ Latih", bg="#9b1c1c", fg="#ffffff", command=self.mulai_training, **btn_cfg)
-        self.btn_latih.pack(side=tk.LEFT, padx=(12, 4))
+        self.btn_latih.pack(side=tk.LEFT, padx=(10, 4))
 
         self.btn_stop = tk.Button(bar, text="■ Stop", bg="#444444", fg="#ffffff", state=tk.DISABLED, command=self.hentikan_training, **btn_cfg)
         self.btn_stop.pack(side=tk.LEFT, padx=4)
@@ -390,7 +394,7 @@ class BPNNProDashboard:
         self.lbl_status_bar = tk.Label(prog_fr, text="Siap. Klik '▶ Latih' sebelum melakukan prediksi.", bg="#1d1d1d", fg="#dddddd", font=("Segoe UI", 9))
         self.lbl_status_bar.pack(side=tk.LEFT)
 
-        self.progress = ttk.Progressbar(prog_fr, mode="determinate", length=260)
+        self.progress = ttk.Progressbar(prog_fr, mode="indeterminate", length=260)
         self.progress.pack(side=tk.RIGHT)
 
         self.txt_log = tk.Text(self.root, height=5, bg="#0e0e0e", fg="#a3e635", font=("Consolas", 9), state=tk.DISABLED, relief=tk.FLAT)
@@ -399,14 +403,17 @@ class BPNNProDashboard:
     # --- REGENERASI DATASET & GALERI ---
     def regenerasi_dataset(self):
         try:
-            n_pola = max(50, int(self.var_n_pola.get()))
+            n_pola = int(self.var_n_pola.get())
+            if n_pola < 50:
+                n_pola = 50
+                self.var_n_pola.set("50")
         except ValueError:
-            n_pola = 60
-            self.var_n_pola.set("60")
+            n_pola = 100
+            self.var_n_pola.set("100")
 
         self.X_train, self.Y_train, self.X_val, self.Y_val, self.X_test, self.Y_test = buat_dataset_cv2(n_pola)
         total = len(self.X_train) + len(self.X_val) + len(self.X_test)
-        info = f"Total Dataset: {total} citra biner (28x28) | Training 80%: {len(self.X_train)} | Validasi 10%: {len(self.X_val)} | Testing 10%: {len(self.X_test)}"
+        info = f"Total Dataset: {total} citra biner (28x28) [{n_pola}/angka] | Training 80%: {len(self.X_train)} | Validasi 10%: {len(self.X_val)} | Testing 10%: {len(self.X_test)}"
         self.lbl_info_data.config(text=info)
         self._tulis_log(info)
 
@@ -555,7 +562,7 @@ class BPNNProDashboard:
                 if l_idx == 3:
                     self.canvas_net.create_text(x + 16, y, text=str(n_idx), fill="#dddddd", font=("Segoe UI", 8, "bold"))
 
-    # --- PROSES TRAINING & EVALUASI ---
+    # --- PROSES TRAINING (EPOCH TIDAK TERBATAS - FAST) & EVALUASI ---
     def mulai_training(self):
         if self.sedang_training:
             return
@@ -563,17 +570,15 @@ class BPNNProDashboard:
             alpha = float(self.var_alpha.get())
             momentum = float(self.var_momentum.get())
             target_mse = float(self.var_target_mse.get())
-            max_epoch = int(self.var_max_epoch.get())
         except ValueError:
-            messagebox.showerror("Input Tidak Valid", "Pastikan Alpha, Momentum, Target MSE, dan Max Epoch berupa angka.")
+            messagebox.showerror("Input Tidak Valid", "Pastikan Alpha, Momentum, dan Target MSE berupa angka.")
             return
 
         self.sedang_training = True
         self.stop_flag = False
         self.btn_latih.config(state=tk.DISABLED)
         self.btn_stop.config(state=tk.NORMAL)
-        self.progress["maximum"] = max_epoch
-        self.progress["value"] = 0
+        self.progress.start(15)
 
         self.hist_epoch.clear()
         self.hist_mse_tr.clear()
@@ -582,19 +587,22 @@ class BPNNProDashboard:
         self.hist_acc_va.clear()
 
         self.model.inisialisasi_nguyen_widrow()
-        threading.Thread(target=self._loop_training, args=(alpha, momentum, target_mse, max_epoch), daemon=True).start()
+        self._tulis_log(f"Memulai training (Epoch ∞) | Target MSE <= {target_mse:.7f} ({target_mse*100:.4f}%)")
+        threading.Thread(target=self._loop_training, args=(alpha, momentum, target_mse), daemon=True).start()
 
     def hentikan_training(self):
         self.stop_flag = True
 
-    def _loop_training(self, alpha, momentum, target_mse, max_epoch):
-        alasan = "Max Epoch tercapai"
-        for ep in range(1, max_epoch + 1):
+    def _loop_training(self, alpha, momentum, target_mse):
+        ep = 0
+        alasan = ""
+        while True:
             if self.stop_flag:
                 alasan = "Dihentikan manual"
                 break
 
-            self.model.train_step(self.X_train, self.Y_train, alpha=alpha, momentum=momentum, weight_decay=1e-4)
+            ep += 1
+            self.model.train_step(self.X_train, self.Y_train, alpha=alpha, momentum=momentum, batch_size=32)
             mse_tr, acc_tr, _, _ = self.model.evaluasi(self.X_train, self.Y_train)
             mse_va, acc_va, _, _ = self.model.evaluasi(self.X_val, self.Y_val)
 
@@ -604,45 +612,49 @@ class BPNNProDashboard:
             self.hist_acc_tr.append(acc_tr)
             self.hist_acc_va.append(acc_va)
 
-            self.root.after(0, self._update_epoch_ui, ep, mse_tr, mse_va, acc_tr, acc_va, target_mse)
+            tercapai = mse_tr <= target_mse
+            update_plot = (ep == 1 or ep % 20 == 0 or tercapai)
+            self.root.after(0, self._update_epoch_ui, ep, mse_tr, mse_va, acc_tr, acc_va, target_mse, update_plot)
 
-            if mse_tr <= target_mse:
-                alasan = f"Target MSE <= {target_mse} tercapai"
+            if tercapai:
+                alasan = f"Target MSE <= {target_mse:.7f} ({target_mse*100:.4f}%) tercapai"
                 break
 
         self.root.after(0, self._selesai_training, alasan, alpha, momentum)
 
-    def _update_epoch_ui(self, ep, mse_tr, mse_va, acc_tr, acc_va, target_mse):
-        self.progress["value"] = ep
-        self.lbl_status_bar.config(text=f"Epoch {ep} | MSE Latih: {mse_tr:.5f} | Val: {mse_va:.5f} | Acc Latih: {acc_tr*100:.1f}% | Val: {acc_va*100:.1f}%")
-        if ep == 1 or ep % 5 == 0:
-            self._tulis_log(f"Epoch {ep:>3} | MSE_tr={mse_tr:.5f} | MSE_va={mse_va:.5f} | Acc_tr={acc_tr:.3f} | Acc_va={acc_va:.3f}")
+    def _update_epoch_ui(self, ep, mse_tr, mse_va, acc_tr, acc_va, target_mse, update_plot):
+        self.lbl_status_bar.config(
+            text=f"Epoch {ep} (∞) | MSE Latih: {mse_tr:.7f} | Val: {mse_va:.7f} | Acc Latih: {acc_tr*100:.1f}% | Val: {acc_va*100:.1f}%"
+        )
+        if update_plot:
+            self._tulis_log(f"Epoch {ep:>4} | MSE_tr={mse_tr:.7f} | MSE_va={mse_va:.7f} | Acc_tr={acc_tr:.3f} | Acc_va={acc_va:.3f}")
 
-        self.ax_mse.clear()
-        self.ax_mse.plot(self.hist_epoch, self.hist_mse_tr, label="MSE Latih", color="#ff6b6b", linewidth=1.8)
-        self.ax_mse.plot(self.hist_epoch, self.hist_mse_va, label="MSE Validasi", color="#ffd166", linestyle="--", linewidth=1.5)
-        self.ax_mse.axhline(target_mse, color="#94a3b8", linestyle=":", linewidth=1.0, label=f"Target ({target_mse})")
-        self.ax_mse.set_title("MSE vs Epoch", fontsize=9)
-        self.ax_mse.set_xlabel("Epoch", fontsize=8)
-        self.ax_mse.set_ylabel("MSE", fontsize=8)
-        self.ax_mse.grid(True, alpha=0.25)
-        self.ax_mse.legend(fontsize=7)
+            self.ax_mse.clear()
+            self.ax_mse.plot(self.hist_epoch, self.hist_mse_tr, label="MSE Latih", color="#ff6b6b", linewidth=1.8)
+            self.ax_mse.plot(self.hist_epoch, self.hist_mse_va, label="MSE Validasi", color="#ffd166", linestyle="--", linewidth=1.5)
+            self.ax_mse.axhline(target_mse, color="#94a3b8", linestyle=":", linewidth=1.0, label=f"Target ({target_mse:.6f})")
+            self.ax_mse.set_title("MSE vs Epoch", fontsize=9)
+            self.ax_mse.set_xlabel("Epoch", fontsize=8)
+            self.ax_mse.set_ylabel("MSE", fontsize=8)
+            self.ax_mse.grid(True, alpha=0.25)
+            self.ax_mse.legend(fontsize=7)
 
-        self.ax_acc.clear()
-        self.ax_acc.plot(self.hist_epoch, [a * 100 for a in self.hist_acc_tr], label="Akurasi Latih (%)", color="#4ade80", linewidth=1.8)
-        self.ax_acc.plot(self.hist_epoch, [a * 100 for a in self.hist_acc_va], label="Akurasi Validasi (%)", color="#60a5fa", linestyle="--", linewidth=1.5)
-        self.ax_acc.set_title("Akurasi vs Epoch (%)", fontsize=9)
-        self.ax_acc.set_xlabel("Epoch", fontsize=8)
-        self.ax_acc.set_ylabel("Akurasi (%)", fontsize=8)
-        self.ax_acc.set_ylim(0, 105)
-        self.ax_acc.grid(True, alpha=0.25)
-        self.ax_acc.legend(fontsize=7)
+            self.ax_acc.clear()
+            self.ax_acc.plot(self.hist_epoch, [a * 100 for a in self.hist_acc_tr], label="Akurasi Latih (%)", color="#4ade80", linewidth=1.8)
+            self.ax_acc.plot(self.hist_epoch, [a * 100 for a in self.hist_acc_va], label="Akurasi Validasi (%)", color="#60a5fa", linestyle="--", linewidth=1.5)
+            self.ax_acc.set_title("Akurasi vs Epoch (%)", fontsize=9)
+            self.ax_acc.set_xlabel("Epoch", fontsize=8)
+            self.ax_acc.set_ylabel("Akurasi (%)", fontsize=8)
+            self.ax_acc.set_ylim(0, 105)
+            self.ax_acc.grid(True, alpha=0.25)
+            self.ax_acc.legend(fontsize=7)
 
-        self.fig_train.tight_layout(pad=1.5)
-        self.canvas_plot.draw_idle()
+            self.fig_train.tight_layout(pad=1.5)
+            self.canvas_plot.draw_idle()
 
     def _selesai_training(self, alasan, alpha, momentum):
         self.sedang_training = False
+        self.progress.stop()
         self.btn_latih.config(state=tk.NORMAL)
         self.btn_stop.config(state=tk.DISABLED)
 
@@ -675,7 +687,7 @@ class BPNNProDashboard:
 
         gap_acc = (acc_tr - acc_va) * 100
         if acc_tr < 0.70:
-            status = "UNDERFITTING (Model belum cukup belajar; naikkan Max Epoch atau Alpha)."
+            status = "UNDERFITTING (Model belum cukup belajar; lanjutkan training atau naikkan Alpha)."
         elif gap_acc > 12.0 or (mse_va > mse_tr * 2.5 and mse_va > 0.02):
             status = f"TERINDIKASI OVERFITTING (Selisih akurasi Latih-Val = {gap_acc:.2f}%)."
         else:
@@ -688,9 +700,9 @@ class BPNNProDashboard:
             f"Total Epoch     : {len(self.hist_epoch)}\n"
             f"Parameter       : α={alpha}, μ={momentum}\n\n"
             f"PERFORMA DATASET (80/10/10)\n"
-            f"  - Training   : MSE={mse_tr:.5f} | Acc={acc_tr*100:.2f}%\n"
-            f"  - Validasi   : MSE={mse_va:.5f} | Acc={acc_va*100:.2f}%\n"
-            f"  - Testing    : MSE={mse_te:.5f} | Acc={acc_te*100:.2f}%\n\n"
+            f"  - Training   : MSE={mse_tr:.7f} | Acc={acc_tr*100:.2f}%\n"
+            f"  - Validasi   : MSE={mse_va:.7f} | Acc={acc_va*100:.2f}%\n"
+            f"  - Testing    : MSE={mse_te:.7f} | Acc={acc_te*100:.2f}%\n\n"
             f"DIAGNOSIS OVERFITTING\n"
             f"  {status}\n\n"
             f"AKURASI PER DIGIT (DATA UJI)\n"
@@ -765,4 +777,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = BPNNProDashboard(root)
     root.mainloop()
-    
